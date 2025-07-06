@@ -1,178 +1,53 @@
-"""
-This module contains the LogisticNet class, a scikit-learn compatible wrapper
-for penalized logistic regression.
-"""
-
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
 from sklearn.utils import Tags
-from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.utils import get_tags
+from sklearn.utils.validation import check_X_y, check_is_fitted
+import pprint
 
 
-class LogisticNet(ClassifierMixin, BaseEstimator):
+class LogisticNet(BaseEstimator, ClassifierMixin):
     """
-    A scikit-learn compatible estimator for penalized logistic regression.
-
-    This class provides a user-friendly interface that mirrors the API of
-    scikit-learn's `LogisticRegression`, but is designed to be powered by the
-    high-performance glmnet library in its final implementation.
-
-    For initial development and testing, it wraps scikit-learn's
-    `LogisticRegression` to provide a functional baseline.
-
-    Parameters
-    ----------
-    C : float, default=1.0
-        Inverse of regularization strength; must be a positive float.
-        Maps to 1/lambda in the future glmnet backend.
-    penalty : {'l1', 'l2'}, default='l2'
-        Regularization type. Maps to glmnet's alpha (l1: alpha=1.0, l2: alpha=0.0).
-    alpha : float, default=1.0
-        Elastic-net mixing parameter (0 <= alpha <= 1), reserved for glmnet backend.
-
-    Attributes
-    ----------
-    coef_ : ndarray of shape (1, n_features)
-        The coefficients (weights) of the features in the decision function.
-    intercept_ : ndarray of shape (1,)
-        The intercept (or bias) term in the decision function.
-    classes_ : ndarray of shape (n_classes,)
-        The unique class labels seen during `fit`.
-    n_features_in_ : int
-        The number of features seen during `fit`.
-    is_fitted_ : bool
-        A boolean indicating that the estimator has been fitted.
-    _estimator : LogisticRegression
-        Internal LogisticRegression instance for the facade.
-
-    Examples
-    --------
-    >>> from sklearn.datasets import make_classification
-    >>> from sklearn.metrics import accuracy_score
-    >>> X, y = make_classification(n_features=10, n_informative=5, random_state=42)
-    >>> model = LogisticNet(C=1.0, penalty='l2')
-    >>> model.fit(X, y)
-    LogisticNet()
-    >>> accuracy = accuracy_score(y, model.predict(X))
-    >>> print(f"Accuracy: {accuracy:.2f}")
-    Accuracy: 0.87
+    A custom classifier that predicts the most frequent class in the training data.
     """
 
-    def __init__(self, C: float = 1.0, penalty: str = "l2", alpha: float = 1.0):
-        """
-        Initializes the LogisticNet model.
-        """
-        self.C = C
-        self.penalty = penalty
-        self.alpha = alpha
-        self._estimator = LogisticRegression(
-            C=self.C,
-            penalty=self.penalty,
-            solver="liblinear",
-            multi_class="ovr"  # Enforce binary classification
-        )
+    def __init__(self):
+        # Parameters should be stored as attributes with the same name.
+        self.n_features_in_ = None
+        self.is_fitted_ = None
+        self.most_frequent_ = None
+        self.X = None
+        self.y = None
 
     def fit(self, X, y):
         """
-        Fit the logistic regression model according to the given training data.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            Training vector, where `n_samples` is the number of samples and
-            `n_features` is the number of features.
-        y : array-like of shape (n_samples,)
-            Target vector relative to X.
-
-        Returns
-        -------
-        self
-            Fitted estimator.
+        Fits the classifier to the training data.
         """
-        X, y = check_X_y(X, y, accept_sparse=True)
-        self.classes_ = unique_labels(y)
-        self.n_features_in_ = X.shape[1]
-        if len(self.classes_) != 2:
-            raise ValueError("LogisticNet supports only binary classification")
-        self._estimator.fit(X, y)
-        self.coef_ = self._estimator.coef_
-        self.intercept_ = self._estimator.intercept_
-        self.is_fitted_ = True
+        # Perform validation on X and y
+        self.X = X
+        self.y = y
+        X, y = check_X_y(X, y)
+
+        # Manually compute the most frequent class
+        unique_classes, counts = np.unique(y, return_counts=True)
+        self.most_frequent_ = unique_classes[np.argmax(counts)]
+
+        self.is_fitted_ = True  # Set the fitted status
+        self.n_features_in_ = X.shape[1]  # Store number of features
+
         return self
 
     def predict(self, X):
         """
-        Predict class labels for samples in X.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            The data matrix for which we want to get the predictions.
-
-        Returns
-        -------
-        y_pred : ndarray of shape (n_samples,)
-            Vector containing the class labels for each sample.
+        Makes predictions based on the fitted classifier.
         """
-        check_is_fitted(self, ["coef_", "intercept_", "is_fitted_"])
-        X = check_array(X, accept_sparse=True)
-        return self._estimator.predict(X)
+        # Ensure the estimator is fitted before predicting
+        check_is_fitted(self, 'is_fitted_')
 
-    def predict_proba(self, X):
-        """
-        Probability estimates for samples in X.
-
-        Parameters
-        ----------
-        X : array-like of shape (n_samples, n_features)
-            Vector to be scored.
-
-        Returns
-        -------
-        T : array-like of shape (n_samples, n_classes)
-            Returns the probability of the sample for each class in the model.
-        """
-        check_is_fitted(self, ["coef_", "intercept_", "is_fitted_"])
-        X = check_array(X, accept_sparse=True)
-        return self._estimator.predict_proba(X)
-
-    def get_params(self, deep=True):
-        """
-        Get parameters for this estimator.
-
-        Parameters
-        ----------
-        deep : bool, default=True
-            If True, will return the parameters for this estimator and
-            contained subobjects that are estimators.
-
-        Returns
-        -------
-        params : dict
-            Parameter names mapped to their values.
-        """
-        return {"C": self.C, "penalty": self.penalty, "alpha": self.alpha}
-
-    def set_params(self, **params):
-        """
-        Set the parameters of this estimator.
-
-        Parameters
-        ----------
-        **params : dict
-            Estimator parameters.
-
-        Returns
-        -------
-        self
-            Estimator instance.
-        """
-        for param, value in params.items():
-            setattr(self, param, value)
-        self._estimator.set_params(C=self.C, penalty=self.penalty)
-        return self
+        # Predict the most frequent class for all instances
+        return np.full(shape=(X.shape[0],), fill_value=self.most_frequent_)
 
     def __sklearn_tags__(self):
         """
@@ -180,10 +55,29 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         """
         return Tags(
             estimator_type="classifier",
-            requires_y=True,
-            binary_only=True,
-            allow_nan=False,
-            requires_fit=True,
-            sparse_input=True,
-            non_deterministic=False
+            target_tags=self.y  # Specify it requires a target variable (y) for fitting
+            # Add other relevant tags as needed
+            # sparse_input=False,
+            # non_deterministic=False,
         )
+
+
+if __name__ == "__main__":
+    iris = load_iris()
+    X, y = iris.data, iris.target
+
+    # Split into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+    # Create an instance of the custom estimator
+    custom_classifier = LogisticNet()
+
+    # Fit the classifier
+    custom_classifier.fit(X_train, y_train)
+
+    # Make predictions
+    predictions = custom_classifier.predict(X_test)
+
+    # Get tags programmatically
+    tags = get_tags(custom_classifier)
+    pprint.pprint(tags)
