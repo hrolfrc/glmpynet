@@ -2,8 +2,8 @@ numpy
 scikit-learn
 sphinx
 sphinx_rtd_theme
-twine
 pytest
 pytest-cov
 pytest-mock
+twine
 build

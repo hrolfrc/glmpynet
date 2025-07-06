@@ -1,106 +1,88 @@
 """
-The glmpynet.LogisticNet classifier.
-
-===============================================================
-Author: Your Name
-License: MIT
-===============================================================
-
-This module provides a scikit-learn compatible wrapper for the `glmnet`
-library, focusing on penalized logistic regression for binary classification.
+This module contains the LogisticNet class, a scikit-learn compatible wrapper
+for penalized logistic regression.
 """
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.linear_model import LogisticRegression
+from sklearn.utils import Tags
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 
 
 class LogisticNet(ClassifierMixin, BaseEstimator):
     """
-    Logistic Regression with elastic-net regularization, using the glmnet backend.
+    A scikit-learn compatible estimator for penalized logistic regression.
 
-    This model provides a scikit-learn compatible interface to the high-performance
-    `glmnet` library, which fits the entire regularization path for logistic
-    regression. Cross-validation is used to select the optimal regularization
-    strength (lambda).
+    This class provides a user-friendly interface that mirrors the API of
+    scikit-learn's `LogisticRegression`, but is designed to be powered by the
+    high-performance glmnet library in its final implementation.
+
+    For initial development and testing, it wraps scikit-learn's
+    `LogisticRegression` to provide a functional baseline.
 
     Parameters
     ----------
+    C : float, default=1.0
+        Inverse of regularization strength; must be a positive float.
+        Maps to 1/lambda in the future glmnet backend.
+    penalty : {'l1', 'l2'}, default='l2'
+        Regularization type. Maps to glmnet's alpha (l1: alpha=1.0, l2: alpha=0.0).
     alpha : float, default=1.0
-        The elastic-net mixing parameter, with `0 <= alpha <= 1`.
-        - `alpha = 1.0` corresponds to Lasso (L1) regularization.
-        - `alpha = 0.0` corresponds to Ridge (L2) regularization.
-        - `0 < alpha < 1` corresponds to a combination of L1 and L2 (Elastic-Net).
-
-    n_lambda : int, default=100
-        The number of lambda values to include in the regularization path.
-        `glmnet` will automatically generate a sequence of lambda values.
-
-    cv : int, default=5
-        The number of folds to use for cross-validation when selecting the
-        best lambda from the regularization path.
+        Elastic-net mixing parameter (0 <= alpha <= 1), reserved for glmnet backend.
 
     Attributes
     ----------
     coef_ : ndarray of shape (1, n_features)
-        The coefficients (weights) of the features in the decision function,
-        corresponding to the best lambda found during cross-validation.
-
+        The coefficients (weights) of the features in the decision function.
     intercept_ : ndarray of shape (1,)
         The intercept (or bias) term in the decision function.
-
-    lambda_best_ : float
-        The optimal lambda value selected by cross-validation.
-
-    n_features_in_ : int
-        The number of features seen during `fit`.
-
     classes_ : ndarray of shape (n_classes,)
         The unique class labels seen during `fit`.
-
-    Notes
-    -----
-    It is highly recommended to scale your data before fitting this model,
-    for example by using `sklearn.preprocessing.StandardScaler`.
+    n_features_in_ : int
+        The number of features seen during `fit`.
+    is_fitted_ : bool
+        A boolean indicating that the estimator has been fitted.
+    _estimator : LogisticRegression
+        Internal LogisticRegression instance for the facade.
 
     Examples
     --------
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.metrics import accuracy_score
     >>> X, y = make_classification(n_features=10, n_informative=5, random_state=42)
-    >>> model = LogisticNet(alpha=0.8)
+    >>> model = LogisticNet(C=1.0, penalty='l2')
     >>> model.fit(X, y)
-    LogisticNet(alpha=0.8)
-    >>> print(f"Number of non-zero coefficients: {np.count_nonzero(model.coef_)}")
-    Number of non-zero coefficients: 5
+    LogisticNet()
     >>> accuracy = accuracy_score(y, model.predict(X))
     >>> print(f"Accuracy: {accuracy:.2f}")
     Accuracy: 0.87
     """
 
-    def __init__(self, alpha: float = 1.0, n_lambda: int = 100, cv: int = 5):
+    def __init__(self, C: float = 1.0, penalty: str = "l2", alpha: float = 1.0):
         """
         Initializes the LogisticNet model.
         """
+        self.C = C
+        self.penalty = penalty
         self.alpha = alpha
-        self.n_lambda = n_lambda
-        self.cv = cv
+        self._estimator = LogisticRegression(
+            C=self.C,
+            penalty=self.penalty,
+            solver="liblinear",
+            multi_class="ovr"  # Enforce binary classification
+        )
 
     def fit(self, X, y):
         """
         Fit the logistic regression model according to the given training data.
-
-        This method will call the underlying `glmnet` backend to compute the
-        full regularization path and then use cross-validation to select the
-        optimal lambda. The coefficients for this best model are then stored.
 
         Parameters
         ----------
         X : {array-like, sparse matrix} of shape (n_samples, n_features)
             Training vector, where `n_samples` is the number of samples and
             `n_features` is the number of features.
-
         y : array-like of shape (n_samples,)
             Target vector relative to X.
 
@@ -109,25 +91,14 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         self
             Fitted estimator.
         """
-        # 1. Validate and check input data
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=True)
         self.classes_ = unique_labels(y)
         self.n_features_in_ = X.shape[1]
-
-        # 2. TODO: Call the glmnet backend here
-        # This is where you would interface with the compiled glmnet code.
-        # It should compute the full path and perform cross-validation.
-        # For now, we will simulate the result.
-
-        # --- Placeholder Implementation ---
-        # Simulate that CV selected a model where some coefficients are zero
-        self.coef_ = np.random.randn(1, self.n_features_in_)
-        zero_indices = np.random.choice(self.n_features_in_, size=self.n_features_in_ // 2, replace=False)
-        self.coef_[0, zero_indices] = 0
-        self.intercept_ = np.random.randn(1)
-        self.lambda_best_ = 0.1  # Placeholder for the best lambda
-        # --- End Placeholder ---
-
+        if len(self.classes_) != 2:
+            raise ValueError("LogisticNet supports only binary classification")
+        self._estimator.fit(X, y)
+        self.coef_ = self._estimator.coef_
+        self.intercept_ = self._estimator.intercept_
         self.is_fitted_ = True
         return self
 
@@ -145,24 +116,13 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         y_pred : ndarray of shape (n_samples,)
             Vector containing the class labels for each sample.
         """
-        check_is_fitted(self)
-        X = check_array(X)
-
-        # Calculate the decision function (linear combination of features)
-        scores = X @ self.coef_.T + self.intercept_
-
-        # Apply a threshold of 0 to get binary predictions
-        predictions = (scores > 0).astype(int).flatten()
-
-        # Map the binary predictions back to the original class labels
-        return self.classes_[predictions]
+        check_is_fitted(self, ["coef_", "intercept_", "is_fitted_"])
+        X = check_array(X, accept_sparse=True)
+        return self._estimator.predict(X)
 
     def predict_proba(self, X):
         """
         Probability estimates for samples in X.
-
-        The returned estimates for all classes are ordered by the
-        label of classes.
 
         Parameters
         ----------
@@ -174,22 +134,56 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         T : array-like of shape (n_samples, n_classes)
             Returns the probability of the sample for each class in the model.
         """
-        check_is_fitted(self)
-        X = check_array(X)
+        check_is_fitted(self, ["coef_", "intercept_", "is_fitted_"])
+        X = check_array(X, accept_sparse=True)
+        return self._estimator.predict_proba(X)
 
-        # Calculate the decision function
-        scores = X @ self.coef_.T + self.intercept_
-
-        # Apply the logistic (sigmoid) function to get probabilities
-        prob_class_1 = 1 / (1 + np.exp(-scores))
-
-        # Create the final probability array
-        probabilities = np.hstack([1 - prob_class_1, prob_class_1])
-        return probabilities
-
-    def _more_tags(self):
+    def get_params(self, deep=True):
         """
-        Internal scikit-learn tag to indicate this is a binary classifier.
-        """
-        return {"binary_only": True}
+        Get parameters for this estimator.
 
+        Parameters
+        ----------
+        deep : bool, default=True
+            If True, will return the parameters for this estimator and
+            contained subobjects that are estimators.
+
+        Returns
+        -------
+        params : dict
+            Parameter names mapped to their values.
+        """
+        return {"C": self.C, "penalty": self.penalty, "alpha": self.alpha}
+
+    def set_params(self, **params):
+        """
+        Set the parameters of this estimator.
+
+        Parameters
+        ----------
+        **params : dict
+            Estimator parameters.
+
+        Returns
+        -------
+        self
+            Estimator instance.
+        """
+        for param, value in params.items():
+            setattr(self, param, value)
+        self._estimator.set_params(C=self.C, penalty=self.penalty)
+        return self
+
+    def __sklearn_tags__(self):
+        """
+        Define estimator tags for capabilities and type.
+        """
+        return Tags(
+            estimator_type="classifier",
+            requires_y=True,
+            binary_only=True,
+            allow_nan=False,
+            requires_fit=True,
+            sparse_input=True,
+            non_deterministic=False
+        )
