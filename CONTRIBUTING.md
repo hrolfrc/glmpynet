@@ -1,7 +1,7 @@
 Contributing to bib-ami
 =======================
 
-First off, thank you for considering contributing to `bib-ami`! We
+First off, thank you for considering contributing to `glmpynet`! We
 welcome any help, from reporting a bug to suggesting a new feature. This
 project is maintained by volunteers in their spare time, so your
 contributions are highly valued.
@@ -33,8 +33,8 @@ that can be reproduced. Please include the following:
 -   **What actually happened:** Include any error messages or
     tracebacks.
 
--   **Your environment:** Your operating system, Python version, and
-    `bib-ami` version.
+-   **Your environment:** Your operating system, Python 
+    version, and the versions of glmpynet, numpy, and scikit-learn.
 
 ### 2. Suggesting Enhancements or New Features
 
@@ -67,7 +67,8 @@ We welcome pull requests for bug fixes and approved features.
 
 -   **Follow the process:**
 
-    1.  Fork the repository and create your branch from `main`.
+    1.  Fork the repository and create your branch from 
+        `master`.
 
     2.  Make your changes. Please adhere to the existing code style.
 
@@ -86,4 +87,4 @@ While we will do our best to review issues and pull requests in a timely
 manner, there may be delays. Starting with a discussion in an issue is
 the best way to ensure your efforts are not wasted.
 
-Thank you again for your interest in making `bib-ami` better!
+Thank you again for your interest in making `glmpynet` better!

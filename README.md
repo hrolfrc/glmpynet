@@ -1,40 +1,69 @@
-#  bib-ami
+#  glmpynet
 
-[![CircleCI](https://circleci.com/gh/hrolfrc/bib-ami.svg?style=shield)](https://circleci.com/gh/hrolfrc/bib-ami)
-[![ReadTheDocs](https://readthedocs.org/projects/bib-ami/badge/?version=latest)](https://bib-ami.readthedocs.io/en/latest/)
-[![Codecov](https://codecov.io/gh/hrolfrc/bib-ami/branch/master/graph/badge.svg)](https://codecov.io/gh/hrolfrc/bib-ami)
-[![DOI](https://zenodo.org/badge/1012755631.svg)](https://doi.org/10.5281/zenodo.15795717)
+[![CircleCI](https://circleci.com/gh/hrolfrc/glmpynet.svg?style=shield)](https://circleci.com/gh/hrolfrc/glmpynet)
+[![ReadTheDocs](https://readthedocs.org/projects/glmpynet/badge/?version=latest)](https://glmpynet.readthedocs.io/en/latest/)
+[![Codecov](https://codecov.io/gh/hrolfrc/glmpynet/branch/master/graph/badge.svg)](https://codecov.io/gh/hrolfrc/glmpynet)
 
-## A Bibliography Integrity Manager
+## glmnet-based Logistic Regression for Scikit-Learn
 
-**bib-ami** is a command-line tool for improving the integrity of BibTeX bibliographies. It automates a critical data cleaning and entity resolution workflow by consolidating multiple `.bib` files, validating every entry against the CrossRef API to establish a canonical DOI, and then deduplicating records based on this verified identifier.
+**glmpynet** is a high-performance Python wrapper for the `glmnet` library, providing a scikit-learn compatible estimator for penalized logistic regression.
 
-The tool intelligently categorizes entries as 'verified' or 'suspect', enabling researchers to build a clean, reliable, and auditable bibliography for their LaTeX, Zotero, or JabRef workflows.
+This project aims to bridge the gap between the raw computational speed of the original Fortran/C++ `glmnet` code and the ease-of-use of the Python data science ecosystem. It provides a single, focused class that acts as a drop-in replacement for `sklearn.linear_model.LogisticRegression` for users who need the power of elastic-net regularization for binary classification.
 
 ## Key Features
 
-* **Merge & Consolidate:** Combines multiple `.bib` files from a directory into a single source.
-* **Validate & Enrich:** Validates every entry against the CrossRef API to find and correct its canonical DOI.
-* **Deduplicate with Confidence:** Uses verified DOIs as the primary key for accurate deduplication, with a fuzzy-matching fallback for entries without a DOI.
-* **Intelligent Triage:** Automatically separates high-confidence, verified records from questionable ones that require manual review.
-* **Audit Trail:** Provides transparent reporting on the actions taken to clean the bibliography.
+* **High Performance:** Leverages the highly optimized, battle-tested `glmnet` Fortran backend for fitting models, making it suitable for large datasets.
 
-## Getting Started
+* **Scikit-learn Compatible:** Implements the standard `fit`, `predict`, and `predict_proba` API, allowing it to be seamlessly integrated into `sklearn` pipelines, `GridSearchCV`, and other tools.
 
-### 1. Installation
+* **Full Regularization Suite:** Supports L1 (Lasso), L2 (Ridge), and Elastic-Net regularization for robust feature selection and prevention of overfitting.
 
-Ensure you have Python 3.7+ installed. You can install `bib-ami` using pip:
+## Installation
+
+Once released, you will be able to install `glmpynet` via pip:
+
+pip install glmpynet
+
+## Quick Start
+
+Using `glmpynet` is designed to be as simple as using any other scikit-learn estimator.
+
+    import numpy as np
+    from glmpynet import LogisticNet
+    from sklearn.model\_selection import train\_test\_split
+    from sklearn.metrics import accuracy\_score
+
+# 1. Generate synthetic data
+
+    X, y = np.random.rand(100, 10), np.random.randint(0, 2, 100)
+    X\_train, X\_test, y\_train, y\_test = train\_test\_split(X, y)
+
+# 2. Instantiate and fit the model
+
+    # alpha=1 -\> Lasso, alpha=0 -\> Ridge, 0 \< alpha \< 1 -\> Elastic-Net
+
+    model = LogisticNet(alpha=0.5)
+    model.fit(X\_train, y\_train)
+
+# 3. Make predictions
+
+    y\_pred = model.predict(X\_test)
+
+# 4. Evaluate the model
+
+    accuracy = accuracy\_score(y\_test, y\_pred)
+    print(f"Model Accuracy: {accuracy:.2f}")
 
 
-    pip install bib-ami
+## Project Status
 
-### 2. Quick Start
+This project is currently in the planning and development phase. The goal is to provide a simple, robust, and well-tested wrapper for the core binary classification functionality of `glmnet`.
 
-To process a directory of `.bib` files, run the following command. You must provide an email address for the responsible use of the CrossRef API.
+## Contributing
 
-    bib-ami --input-dir path/to/your/bibs --output-file cleaned.bib --suspect-file suspect.bib --email "your.email@example.com"
+Contributions are welcome! Please see the `CONTRIBUTING.md` file for guidelines on how to report bugs, suggest features, or submit pull requests.
 
-This will produce two files:
+## License
 
-* `cleaned.bib`: Contains the verified and accepted entries.
-* `suspect.bib`: Contains entries that could not be verified and require manual review.
+This project is distributed under the MIT License.
+```

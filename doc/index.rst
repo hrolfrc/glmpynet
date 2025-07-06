@@ -1,21 +1,21 @@
-.. bib-ami documentation master file
+.. glmpynet documentation master file
 
-Welcome to bib-ami's documentation!
-===================================
+Welcome to glmpynet's documentation!
+=====================================
 
-**bib-ami** is a command-line tool for improving the integrity of BibTeX bibliographies. It helps researchers by automating several common data cleaning tasks: merging multiple ``.bib`` files, identifying and removing duplicate entries, and validating or finding missing DOIs by querying the CrossRef API.
+**glmpynet** is a Python package that provides a scikit-learn compatible interface to the high-performance `glmnet` library, focusing on penalized logistic regression for binary classification.
 
-The goal is to produce a clean, consolidated, and more reliable BibTeX file, reducing the manual effort required to manage academic references.
+This documentation will guide you through installing the package, understanding its core concepts, and using it in your own data science workflows.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    getting_started
-   philosophy_and_goals
-   architecture_and_workflow
    usage_guide
-   testing_strategy
+   api_reference
+   examples
+   architecture
    project_information
 
 Indices and tables

@@ -4,7 +4,9 @@ version: 2.1
 # ORBS: Reusable packages of CircleCI configuration.
 # ------------------------------------------------------------------------------
 orbs:
+  # Simplifies common Python operations.
   python: circleci/python@2.1.1
+  # Simplifies uploading coverage reports to Codecov.
   codecov: codecov/codecov@5
 
 # ------------------------------------------------------------------------------
@@ -13,22 +15,25 @@ orbs:
 jobs:
   unit-test:
     docker:
-      - image: cimg/python:3.11  # Matches local Python 3.11.13
+      - image: cimg/python:3.11
     working_directory: ~/repo
     steps:
       - checkout
       - run:
           name: Verify critical files
+          # Check for the new project structure.
           command: |
-            ls -l README.md pyproject.toml bib_ami/__main__.py || exit 1
+            ls -l README.md pyproject.toml glmpynet/logistic_net.py || exit 1
       - python/install-packages:
           pkg-manager: pip
+          # Install dependencies for running unit tests.
           args: >
-            pytest pytest-cov pytest-mock bibtexparser requests fuzzywuzzy python-Levenshtein
+            pytest pytest-cov pytest-mock
+            numpy scikit-learn glmnet
       - run:
           name: Run unit tests
           command: |
-            python -m pytest tests/unit/ -v --cov=bib_ami --cov-report=xml
+            python -m pytest tests/unit/ -v --cov=glmpynet --cov-report=xml
       - store_artifacts:
           path: coverage.xml
       - codecov/upload:
@@ -42,8 +47,10 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
+          # Install dependencies for running integration tests.
           args: >
-            pytest pytest-cov pytest-mock bibtexparser requests fuzzywuzzy python-Levenshtein
+            pytest pytest-cov pytest-mock
+            numpy scikit-learn glmnet
       - run:
           name: Run E2E tests
           command: |
@@ -59,12 +66,14 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
+          # Install dependencies for building and deploying.
           args: >
             twine sphinx sphinx_rtd_theme build
       - run:
           name: Build documentation
           command: |
             cd doc
+            pip install -r requirements.txt
             make html
             cd ..
       - run:
@@ -91,11 +100,12 @@ workflows:
             - unit-test
       - deploy:
           context:
-            - twine
-            - codecov
+            - twine    # Provides TWINE_USERNAME and TWINE_PASSWORD
+            - codecov  # Provides CODECOV_TOKEN
           requires:
             - integration-test
           filters:
             branches:
+              # This ensures deployment only happens on the 'master' branch.
               only:
                 - master

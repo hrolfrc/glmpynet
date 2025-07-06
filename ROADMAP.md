@@ -1,49 +1,60 @@
-# bib-ami: Future Development Plan
+# glmpynet: Project Roadmap
 
-With the core architecture implemented and tested, the project is on a solid foundation. This document outlines the remaining features required to complete the current vision, as well as potential enhancements for future versions.
+This document outlines the development plan for `glmpynet`. With the initial documentation and API stubs in place for binary logistic regression, this roadmap focuses on implementing the core functionality and expanding the library to support the other powerful models offered by the `glmnet` backend.
 
----
+## Foundational Priority: Core Implementation & Quality
 
-## Foundational Priority: Code Quality & Robustness
+This is the ongoing priority to ensure the project is robust, reliable, and maintainable.
 
-This is an ongoing priority that should be addressed alongside all new feature development to ensure the long-term health and stability of the project.
+### 1. Implement the `LogisticNet` Core
 
-### Increase Test Coverage to >90%
+* **Goal:** To build the working backend for the `LogisticNet` class, including the interface to the compiled `glmnet` code and the automatic cross-validation for lambda selection.
+* **Status:** In progress.
 
-* **Goal:** To move from the current coverage level to 85--95%, ensuring all critical application logic is verified by automated tests.
+### 2. Increase Test Coverage to >90%
+
+* **Goal:** To ensure all critical application logic is verified by automated tests, providing confidence in the correctness of the wrapper.
 * **Strategy:**
-    1.  **Target Untested Logic:** Use the Codecov report to identify modules and functions with low coverage.
-    2.  **Write "Unhappy Path" Tests:** Add specific unit tests for error conditions, such as file I/O errors in the `Ingestor`, API failures in the `Validator`, and malformed entries in the `Reconciler`.
-    3.  **Ensure Full Branch Coverage:** Add tests to verify that all `if/else` conditions in the `Triage` and `Reconciler` classes are executed.
-    4.  **Maintain Coverage:** Configure CI (e.g., with Codecov's settings) to fail a pull request if it decreases the overall test coverage.
+  * Write unit tests for all data preparation and result parsing logic.
+  * Create integration tests that verify the interaction with the `glmnet` backend using small, controlled datasets.
+  * Ensure all scikit-learn compatibility checks are passed.
 
----
+## Priority 1: Linear Regression (Gaussian Models)
 
-## Priority 1: High-Value Future Enhancements
+This is the most common use case for `glmnet` after logistic regression and is the highest priority for expansion.
 
-These features would provide the most significant improvements in coverage and usability for a future `v1.0` release.
+### Create a `LinearNet` Estimator
 
-### 1. Add DataCite API Support
+* **Goal:** To provide a scikit-learn compatible regressor for performing regularized linear regression.
+* **Implementation Steps:**
+  1. Create a new `LinearNet` class that inherits from `sklearn.base.RegressorMixin`.
+  2. Implement the `.fit()` method to call the `glmnet` backend with the "gaussian" family option.
+  3. Implement the `.predict()` method to return continuous value predictions.
+  4. Add comprehensive tests to verify its performance and scikit-learn compatibility.
 
-* **Problem:** CrossRef primarily covers journal articles and conference papers. Datasets, software, and many technical reports are registered with DataCite.
-* **Solution:** Create a `DataCiteClient` that mirrors the `CrossRefClient`. The `Validator` would first query CrossRef; if no match is found, it would then query DataCite as a fallback. This would dramatically increase the tool's coverage.
+## Priority 2: Multi-Class Classification
 
-### 2. Add ISBN Validation for Books
+This feature extends the library's classification capabilities beyond binary problems.
 
-* **Problem:** Books are a common entry type but often lack DOIs, making them "Suspect" by default.
-* **Solution:** For entries of type `@book`, use the `isbn` field to query an external source like the **Google Books API** or **Open Library API**. A successful match would allow the book to be validated and its metadata refreshed.
+### Enhance `LogisticNet` or Create `MultinomialNet`
 
-### 3. Implement API Caching
+* **Goal:** To support multi-class classification using the multinomial logistic regression capabilities of `glmnet`.
+* **Implementation Steps:**
+  1. Decide on the best API: either add multi-class handling to the existing `LogisticNet` or create a new, dedicated `MultinomialNet` class.
+  2. Implement the `.fit()` method to call the `glmnet` backend with the "multinomial" family option.
+  3. Ensure that `.predict()` and `.predict_proba()` correctly handle multi-class outputs (e.g., shape of `(n_samples, n_classes)` for probabilities).
+  4. Add tests for multi-class scenarios.
 
-* **Problem:** Running the tool multiple times on the same library results in many redundant API calls, which is slow and unfriendly to the API providers.
-* **Solution:** Implement a simple local file-based cache. Before making an API call, check if the query has been made recently. If so, use the cached result. This would provide a performance boost for iterative runs.
+## Priority 3: Other `glmnet` Models
 
----
+These features would round out the library, providing wrappers for the more specialized models available in `glmnet`.
 
-## Priority 2: Robustness and Quality-of-Life Improvements
+### 1. Add Cox Proportional Hazards Model
 
-These are smaller features that would make the tool more professional and easier to use.
+* **Goal:** To provide a wrapper for survival analysis.
+* **Action:** Create a `CoxNet` class that interfaces with `glmnet`'s "cox" family, designed for time-to-event data.
 
-* **Interactive "Gleaning" Mode:** For the `suspect.bib` file, an interactive mode could present each suspect entry to the user and ask them to `[k]eep`, `[d]iscard`, or `[s]earch again with new metadata?`.
-* **Configurable Triage Rules:** Move the rules for what constitutes an "Accepted" entry (e.g., `@book`, `@techreport`) into the `bib_ami_config.json` file, allowing users to customize the triage logic.
-* **Parallel API Requests:** The validation phase is the main bottleneck. Refactor the `Validator` to use Python's `concurrent.futures` to make multiple API requests in parallel, speeding up the process for large bibliographies.
+### 2. Add Poisson Regression Model
+
+* **Goal:** To provide a wrapper for modeling count data.
+* **Action:** Create a `PoissonNet` class that interfaces with `glmnet`'s "poisson" family.

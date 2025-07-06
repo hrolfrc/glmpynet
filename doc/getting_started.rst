@@ -1,62 +1,66 @@
-Introduction
-============
-
-**bib-ami** is a command-line utility for improving the integrity of
-BibTeX (``.bib``) bibliographies. It is designed to help researchers,
-academics, and students by automating several common data cleaning
-tasks.
-
-Managing bibliographies often involves dealing with duplicate entries,
-inconsistent formatting, and missing metadata. **bib-ami** addresses
-these issues by providing functionality to merge multiple ``.bib``
-files, identify and remove duplicate entries, and validate or find
-missing Digital Object Identifiers (DOIs) by querying the CrossRef API.
-The goal is to produce a consolidated and more reliable BibTeX file,
-reducing the manual effort required to manage academic references.
+.. _getting_started:
 
 Getting Started
 ===============
 
-This section is designed to get you up and running with **bib-ami** in
-under five minutes.
+This guide provides the essential steps to install `glmpynet` and run your first penalized logistic regression model.
 
 Installation
 ------------
 
-**bib-ami** is distributed via the Python Package Index (PyPI) and can
-be installed easily using ``pip``. Ensure you have Python 3.7 or higher
-installed.
+The recommended way to install `glmpynet` is from the Python Package Index (PyPI) using `pip`. Ensure you have Python 3.7 or higher installed.
 
-.. code:: bash
+.. code-block:: bash
 
-   pip install bib-ami
+   pip install glmpynet
 
-This command will also install all necessary dependencies, including
-``bibtexparser``, ``requests``, and ``fuzzywuzzy``.
+This will install the package along with its required dependencies, such as `numpy` and `scikit-learn`.
 
-Quick Start Example
--------------------
+Quick Start
+-----------
 
-The fastest way to see **bib-ami** in action is to run it on a directory
-of your existing ``.bib`` files. This single command will merge all
-found files, deduplicate the entries, attempt to find missing DOIs, and
-save the result to a new, clean file.
+Using `glmpynet` is designed to be as straightforward as using any other scikit-learn estimator. The main class, `LogisticNet`, follows the standard `.fit()` and `.predict()` API.
 
-#. Create a directory (e.g., ``my_bib_files``) and place all your source
-   ``.bib`` files inside it.
+The following example demonstrates how to train a model and make predictions on synthetic data.
 
-#. Create a second directory for the output (e.g., ``output``).
+.. code-block:: python
 
-#. Run the following command from your terminal, making sure to provide
-   your email address. An email is required for responsible use of the
-   CrossRef API’s Polite Pool.
+   import numpy as np
+   from glmpynet import LogisticNet
+   from sklearn.datasets import make_classification
+   from sklearn.model_selection import train_test_split
+   from sklearn.metrics import accuracy_score
 
-.. code:: bash
+    # 1. Generate a synthetic binary classification dataset
+    # This creates a more realistic problem than purely random data.
+   X, y = make_classification(
+       n_samples=1000,
+       n_features=20,
+       n_informative=5,
+       n_redundant=5,
+       n_classes=2,
+       random_state=42
+   )
+   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-   bib-ami --input-dir my_bib_files --output-file output/cleaned_library.bib --email "your.name@university.edu"
+   # 2. Instantiate and fit the model
+   # The `alpha` parameter controls the elastic-net mixing:
+   # alpha=1.0 is for Lasso (L1) regularization
+   # alpha=0.0 is for Ridge (L2) regularization
+   # 0 < alpha < 1 is for Elastic-Net
+   model = LogisticNet(alpha=0.5)
+   model.fit(X_train, y_train)
 
-After the process completes, you will find a ``cleaned_library.bib``
-file in your ``output`` directory. This file contains the consolidated
-and enhanced collection of your references. A summary of the actions
-taken (e.g., duplicates removed, DOIs added) will be printed to your
-console.
+   # 3. Make predictions on the test set
+   y_pred = model.predict(X_test)
+   y_pred_proba = model.predict_proba(X_test)
+
+   # 4. Evaluate the model's performance
+   accuracy = accuracy_score(y_test, y_pred)
+   print(f"Model Accuracy: {accuracy:.2f}")
+   print(f"Predicted probabilities for the first 5 samples:\n{y_pred_proba[:5]}")
+
+Next Steps
+----------
+
+You have now successfully trained your first `glmpynet` model. To learn more about the model's parameters, advanced usage, and the theory behind penalized regression, please proceed to the :ref:`user_guide`.

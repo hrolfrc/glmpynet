@@ -3,43 +3,50 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bib-ami"
-version = "0.10.8"
-description = "A command-line tool for improving the integrity of BibTeX bibliographies"
+name = "glmpynet"
+version = "0.1.0" # Starting version for the new project
+description = "A scikit-learn compatible wrapper for glmnet-based logistic regression."
 readme = "README.md"
 authors = [{name = "Rolf Carlson", email = "hrolfrc@gmail.com"}]
 license = {text = "MIT"}
 requires-python = ">=3.7"
+
+# Core dependencies required for the library to run
 dependencies = [
-    "bibtexparser>=1.4.1",
-    "requests>=2.31.0",
-    "fuzzywuzzy>=0.18.0",
-    "python-Levenshtein>=0.25.0",
+    "numpy",
+    "scikit-learn"
 ]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 
 [project.urls]
-Homepage = "https://github.com/hrolfrc/bib-ami"
-Repository = "https://github.com/hrolfrc/bib-ami"
-Documentation = "https://bib-ami.readthedocs.io"
+Homepage = "https://github.com/hrolfrc/glmpynet"
+Repository = "https://github.com/hrolfrc/glmpynet"
+Documentation = "https://glmpynet.readthedocs.io"
 
 [project.scripts]
-bib-ami = "bib_ami.__main__:main"
+# This creates the command-line entry point, if you decide to add one.
+# For a library, this might not be necessary, but it's here for completeness.
+glmpynet = "glmpynet.__main__:main"
 
 [project.optional-dependencies]
+# Dependencies needed for development and testing
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.14.0",
-    "sphinx>=7.0.0",
-    "sphinx_rtd_theme>=2.0.0",
+    "pytest",
+    "pytest-cov",
+    "sphinx",
+    "sphinx_rtd_theme",
+    "build",
+    "twine",
 ]
 
 [tool.setuptools]
-packages.find = {where = ["."], include = ["bib_ami*"]}
+# Tells setuptools where to find the package source code
+packages.find = {where = ["."], include = ["glmpynet*"]}

@@ -4,7 +4,11 @@ project = 'bib-ami'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.10.8'
+release = '0.1.0'
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../glmpynet'))
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
