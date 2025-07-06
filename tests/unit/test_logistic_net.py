@@ -1,6 +1,6 @@
 import pytest
 from sklearn.datasets import load_iris
-from logistic_net import LogisticNet
+from glmpynet.logistic_net import LogisticNet
 
 
 @pytest.fixture
