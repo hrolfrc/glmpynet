@@ -24,12 +24,20 @@ jobs:
           # Check for the new project structure.
           command: |
             ls -l README.md pyproject.toml glmpynet/logistic_net.py || exit 1
+
+      # CORRECTED: Implement a two-step installation process.
+      - run:
+          name: Install build-time dependencies first
+          command: |
+            pip install numpy
+
       - python/install-packages:
           pkg-manager: pip
-          # Install dependencies for running unit tests.
+          # Install the remaining dependencies.
           args: >
             pytest pytest-cov pytest-mock
-            numpy scikit-learn
+            scikit-learn glmnet
+
       - run:
           name: Run unit tests
           command: |
@@ -45,12 +53,16 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run:
+          name: Install build-time dependencies first
+          command: |
+            pip install numpy
+
       - python/install-packages:
           pkg-manager: pip
-          # Install dependencies for running integration tests.
           args: >
             pytest pytest-cov pytest-mock
-            numpy scikit-learn
+            scikit-learn glmnet
       - run:
           name: Run E2E tests
           command: |
@@ -106,6 +118,5 @@ workflows:
             - integration-test
           filters:
             branches:
-              # This ensures deployment only happens on the 'master' branch.
               only:
                 - master
