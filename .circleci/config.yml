@@ -36,7 +36,7 @@ jobs:
           # Install the remaining dependencies.
           args: >
             pytest pytest-cov pytest-mock
-            scikit-learn glmnet
+            scikit-learn
 
       - run:
           name: Run unit tests
@@ -62,7 +62,7 @@ jobs:
           pkg-manager: pip
           args: >
             pytest pytest-cov pytest-mock
-            scikit-learn glmnet
+            scikit-learn
       - run:
           name: Run E2E tests
           command: |
