@@ -4,7 +4,7 @@ project = 'bib-ami'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.1.7'
+release = '0.2.0'
 
 import os
 import sys
