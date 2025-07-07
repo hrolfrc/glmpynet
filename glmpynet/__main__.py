@@ -1,7 +1,7 @@
 """
-Main entry point for the bib-ami command-line tool.
+Main entry point for the glmpynet command-line tool.
 
-This script is executed when the `bib-ami` command is run from the terminal.
+This script is executed when the `glmpynet` command is run from the terminal.
 Its primary responsibilities are:
 1.  Setting up basic logging for the application.
 2.  Parsing command-line arguments and configuration settings using the CLIParser.
@@ -17,7 +17,7 @@ from .bibtex_manager import BibTexManager
 
 def main():
     """
-    Initializes and runs the bib-ami application workflow.
+    Initializes and runs the glmpynet application workflow.
 
     This function orchestrates the entire process by parsing arguments,
     instantiating the manager, running the workflow, and handling top-level
@@ -48,5 +48,5 @@ def main():
 
 if __name__ == "__main__":
     # This allows the script to be run directly, e.g., `python -m bib_ami.__main__`.
-    # The `entry_points` in setup.py makes this the target for the `bib-ami` command.
+    # The `entry_points` in setup.py makes this the target for the `glmpynet` command.
     main()

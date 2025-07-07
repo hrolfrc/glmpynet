@@ -1,10 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
-project = 'bib-ami'
+project = 'glmpynet'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.2.3'
+release = '0.2.4'
 
 import os
 import sys

@@ -1,4 +1,4 @@
-Contributing to bib-ami
+Contributing to glmpynet
 =======================
 
 First off, thank you for considering contributing to `glmpynet`! We
