@@ -65,8 +65,7 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         self._estimator = LogisticRegression(
             C=self.C,
             penalty=self.penalty,
-            solver="liblinear",
-            multi_class="ovr"  # Enforce binary classification
+            solver="liblinear"
         )
 
     def fit(self, X, y):

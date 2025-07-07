@@ -37,6 +37,7 @@ jobs:
           args: >
             pytest pytest-cov pytest-mock
             scikit-learn
+            pandas
 
       - run:
           name: Run unit tests
