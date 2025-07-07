@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glmpynet"
-version = "0.2.7"
+version = "0.2.8"
 description = "A scikit-learn compatible wrapper for glmnet-based logistic regression."
 readme = "README.md"
 authors = [{name = "Rolf Carlson", email = "hrolfrc@gmail.com"}]
@@ -12,6 +12,7 @@ license = {text = "MIT"}
 requires-python = ">=3.7"
 dependencies = [
     "numpy",  # Required by scikit-learn
+    "pandas",
     "scikit-learn",  # Added for LogisticRegression facade
 ]
 classifiers = [

@@ -1,6 +1,5 @@
 numpy
 pandas
-pandoc
 scikit-learn
 sphinx
 sphinx_rtd_theme
