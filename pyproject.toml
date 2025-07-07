@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glmpynet"
-version = "0.2.4"
+version = "0.2.5"
 description = "A scikit-learn compatible wrapper for glmnet-based logistic regression."
 readme = "README.md"
 authors = [{name = "Rolf Carlson", email = "hrolfrc@gmail.com"}]
@@ -34,7 +34,8 @@ dev = [
     "pytest-cov",
     "pytest-mock",
     "sphinx",
-    "sphinx_rtd_theme"
+    "sphinx_rtd_theme",
+    "nbsphinx"
 ]
 
 [project.scripts]

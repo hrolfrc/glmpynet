@@ -2,6 +2,7 @@ numpy
 scikit-learn
 sphinx
 sphinx_rtd_theme
+nbsphinx
 pytest
 pytest-cov
 pytest-mock

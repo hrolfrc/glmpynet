@@ -4,7 +4,7 @@ project = 'glmpynet'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.2.4'
+release = '0.2.5'
 
 import os
 import sys
@@ -22,8 +22,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',  # For Google-style docstrings
+    'sphinx_rtd_theme',
+    'nbsphinx',
 ]
 
 # Theme
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+# nbsphinx settings
+# nbsphinx_execute = 'never'  # Use pre-executed outputs for reproducibility

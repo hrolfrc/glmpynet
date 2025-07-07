@@ -15,6 +15,7 @@ This documentation will guide you through installing the package, understanding 
    usage_guide
    api_reference
    examples
+   notebooks/index
    requirements
    architecture
    project_information

@@ -1,14 +1,16 @@
 import unittest
 
 import numpy as np
+import pytest
 from sklearn.datasets import make_classification
+from sklearn.datasets import make_sparse_uncorrelated
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.validation import check_is_fitted
 
-from glmpynet.logistic_net import LogisticNet
+from glmpynet import LogisticNet
 
 
 class TestLogisticNet(unittest.TestCase):
@@ -78,6 +80,35 @@ class TestLogisticNet(unittest.TestCase):
         grid_search.fit(self.X_train, self.y_train)
         self.assertTrue(hasattr(grid_search, 'best_estimator_'))
         self.assertIn(grid_search.best_params_['C'], [0.1, 1.0, 10.0])
+
+    def test_default_instantiation(self):
+        """Test that LogisticNet can be instantiated without arguments."""
+        model = LogisticNet()
+        assert model.C == 1.0
+        assert model.penalty == "l2"
+        model.fit(self.X_train, self.y_train)  # Should not raise errors
+
+    def test_binary_classification(self):
+        """Test that LogisticNet enforces binary classification."""
+        X_multi, y_multi = make_classification(n_samples=100, n_features=4, random_state=42)
+        model = LogisticNet()
+        with pytest.raises(ValueError, match="LogisticNet supports only binary classification"):
+            model.fit(X_multi, y_multi)
+
+    def test_sparse_input(self):
+        """Test that LogisticNet handles sparse input data."""
+        X_sparse, y = make_sparse_uncorrelated(random_state=0)
+        X_train_sparse, X_test_sparse, y_train, y_test = train_test_split(
+            X_sparse, self.y, test_size=0.2, random_state=42
+        )
+        model = LogisticNet(penalty="l1")
+        model.fit(X_train_sparse, y_train)
+        y_pred = model.predict(X_test_sparse)
+        assert y_pred.shape == (X_test_sparse.shape[0],)
+        assert np.all(np.isin(y_pred, model.classes_))
+        y_proba = model.predict_proba(X_test_sparse)
+        assert y_proba.shape == (X_test_sparse.shape[0], 2)
+        assert np.allclose(y_proba.sum(axis=1), 1.0)
 
     def test_sklearn_compatibility(self):
         """Tests scikit-learn API compatibility with check_estimator."""
