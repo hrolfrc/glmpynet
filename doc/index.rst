@@ -15,6 +15,7 @@ This documentation will guide you through installing the package, understanding 
    usage_guide
    api_reference
    examples
+   requirements
    architecture
    project_information
 
