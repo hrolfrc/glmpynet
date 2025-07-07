@@ -5,6 +5,7 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.validation import check_is_fitted
 
 from glmpynet.logistic_net import LogisticNet
@@ -78,10 +79,10 @@ class TestLogisticNet(unittest.TestCase):
         self.assertTrue(hasattr(grid_search, 'best_estimator_'))
         self.assertIn(grid_search.best_params_['C'], [0.1, 1.0, 10.0])
 
-    # def test_sklearn_compatibility(self):
-    #     """Tests scikit-learn API compatibility with check_estimator."""
-    #     estimator = LogisticNet(C=1.0, penalty="l2")
-    #     check_estimator(estimator)
+    def test_sklearn_compatibility(self):
+        """Tests scikit-learn API compatibility with check_estimator."""
+        estimator = LogisticNet(C=1.0, penalty="l2")
+        check_estimator(estimator)
 
 
 if __name__ == '__main__':

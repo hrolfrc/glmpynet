@@ -3,13 +3,13 @@ This module contains the LogisticNet class, a scikit-learn compatible wrapper
 for penalized logistic regression.
 """
 
-import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.linear_model import LogisticRegression
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 
 
+# noinspection PyAttributeOutsideInit
 class LogisticNet(ClassifierMixin, BaseEstimator):
     """
     A scikit-learn compatible estimator for penalized logistic regression.
@@ -25,11 +25,8 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
     ----------
     C : float, default=1.0
         Inverse of regularization strength; must be a positive float.
-        Maps to 1/lambda in the future glmnet backend.
     penalty : {'l1', 'l2'}, default='l2'
-        Regularization type. Maps to glmnet's alpha (l1: alpha=1.0, l2: alpha=0.0).
-    alpha : float, default=1.0
-        Elastic-net mixing parameter (0 <= alpha <= 1), reserved for glmnet backend.
+        Regularization type.
 
     Attributes
     ----------
@@ -51,7 +48,7 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.metrics import accuracy_score
     >>> X, y = make_classification(n_features=10, n_informative=5, random_state=42)
-    >>> model = LogisticNet(C=1.0, penalty='l2')
+    >>> model = LogisticNet()
     >>> model.fit(X, y)
     LogisticNet()
     >>> accuracy = accuracy_score(y, model.predict(X))
@@ -59,18 +56,12 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
     Accuracy: 0.87
     """
 
-    def __init__(self, C: float = 1.0, penalty: str = "l2", alpha: float = 1.0):
+    def __init__(self, C: float = 1.0, penalty: str = "l2"):
         """
         Initializes the LogisticNet model.
         """
-        self.is_fitted_ = None
-        self.intercept_ = None
-        self.coef_ = None
-        self.n_features_in_ = None
-        self.classes_ = None
         self.C = C
         self.penalty = penalty
-        self.alpha = alpha
         self._estimator = LogisticRegression(
             C=self.C,
             penalty=self.penalty,
@@ -92,13 +83,12 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
 
         Returns
         -------
-        self : Fitted estimator.
+        self
+            Fitted estimator.
         """
         X, y = check_X_y(X, y, accept_sparse=True)
         self.classes_ = unique_labels(y)
         self.n_features_in_ = X.shape[1]
-        if len(self.classes_) != 2:
-            raise ValueError("LogisticNet supports only binary classification")
         self._estimator.fit(X, y)
         self.coef_ = self._estimator.coef_
         self.intercept_ = self._estimator.intercept_
@@ -156,7 +146,9 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         params : dict
             Parameter names mapped to their values.
         """
-        return {"C": self.C, "penalty": self.penalty, "alpha": self.alpha}
+        # Get base parameters from LogisticRegression, subset to C and penalty
+        params = {"C": self.C, "penalty": self.penalty}
+        return params
 
     def set_params(self, **params):
         """
@@ -169,26 +161,19 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
 
         Returns
         -------
-        self : Estimator instance.
+        self
+            Estimator instance.
         """
+        # Update LogisticNet parameters
         super().set_params(**params)
-        estimator_params = {"C": self.C, "penalty": self.penalty}
+        # Filter parameters for LogisticRegression
+        estimator_params = {k: v for k, v in params.items() if k in ["C", "penalty"]}
         self._estimator.set_params(**estimator_params)
         return self
 
-    @staticmethod
-    def _get_tags():
+    def __sklearn_tags__(self):
         """
         Define estimator tags for capabilities and type.
         """
-        return {
-            "requires_y": True,
-            "allow_nan": False,
-            "non_deterministic": False,
-            "preserves_dtype": [np.float64, np.float32],
-            "requires_positive_X": False,
-            "poor_score": False,
-            "no_validation": False,
-            "multioutput": False,
-            "requires_positive_y": False,
-        }
+        # Use LogisticRegression's tags directly
+        return LogisticRegression().__sklearn_tags__()
