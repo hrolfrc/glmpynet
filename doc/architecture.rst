@@ -1,6 +1,6 @@
 .. _architecture:
 
-glmpynet: Architecture and Design
+Architecture and Design
 =================================
 
 1. Introduction
