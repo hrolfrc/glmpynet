@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, roc_auc_score
-from glmpynet import LogisticNet
+from glmpynet.logistic_regression import LogisticNet
 
 
 class TestLogisticNetE2E:
