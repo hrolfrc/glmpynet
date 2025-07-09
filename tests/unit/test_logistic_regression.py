@@ -14,7 +14,7 @@ from sklearn.utils._param_validation import InvalidParameterError
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.validation import check_is_fitted
 
-from glmpynet import LogisticNet
+from glmpynet.logistic_regression import LogisticNet
 
 
 class TestLogisticNet(unittest.TestCase):
