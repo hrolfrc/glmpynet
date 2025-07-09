@@ -23,9 +23,9 @@ jobs:
           name: Verify critical files
           # Check for the new project structure.
           command: |
-            ls -l README.md pyproject.toml glmpynet/logistic_net.py || exit 1
+            ls -l README.md pyproject.toml glmpynet/logistic_regression.py || exit 1
 
-      # CORRECTED: Implement a two-step installation process.
+      # Implement a two-step process for installations that require numpy.
       - run:
           name: Install build-time dependencies first
           command: |
