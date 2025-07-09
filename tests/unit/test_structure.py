@@ -13,7 +13,7 @@ class TestUnitStructure(unittest.TestCase):
         This verifies that the Python path is configured correctly for tests.
         """
         try:
-            from glmpynet.logistic_net import LogisticNet
+            from glmpynet.logistic_regression import LogisticNet
         except ImportError as e:
             self.fail(f"Failed to import LogisticNet from a unit test: {e}")
 
