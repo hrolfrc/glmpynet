@@ -24,21 +24,17 @@ jobs:
           # Check for the new project structure.
           command: |
             ls -l README.md pyproject.toml glmpynet/logistic_regression.py || exit 1
-
+      - run:
+          name: Install system dependencies
+          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
       # Implement a two-step process for installations that require numpy.
       - run:
           name: Install build-time dependencies first
           command: |
             pip install numpy
-
-      - python/install-packages:
-          pkg-manager: pip
-          # Install the remaining dependencies.
-          args: >
-            pytest pytest-cov pytest-mock
-            scikit-learn
-            pandas
-
+      - run:
+          name: Install Python dependencies
+          command: pip install -r requirements.txt
       - run:
           name: Run unit tests
           command: |
@@ -47,7 +43,6 @@ jobs:
           path: coverage.xml
       - codecov/upload:
           token: CODECOV_TOKEN
-
   integration-test:
     docker:
       - image: cimg/python:3.11
@@ -55,22 +50,21 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install system dependencies
+          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
+      - run:
           name: Install build-time dependencies first
           command: |
             pip install numpy
-
-      - python/install-packages:
-          pkg-manager: pip
-          args: >
-            pytest pytest-cov pytest-mock
-            scikit-learn
       - run:
-          name: Run E2E tests
+          name: Install Python dependencies
+          command: pip install -r requirements.txt
+      - run:
+          name: Run integration tests
           command: |
             python -m pytest tests/e2e/ -v --log-file=integration.log
       - store_artifacts:
           path: integration.log
-
   deploy:
     docker:
       - image: cimg/python:3.11
@@ -78,13 +72,11 @@ jobs:
     steps:
       - checkout
       - run:
-            name: Install system dependencies
-            command: |
-              sudo apt-get update
-              sudo apt-get install -y pandoc
+          name: Install system dependencies
+          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
       - run:
-            name: Install Python dependencies
-            command: pip install -r requirements.txt
+          name: Install Python dependencies
+          command: pip install -r requirements.txt
       - run:
           name: Build documentation
           command: |
