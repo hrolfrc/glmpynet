@@ -6,7 +6,7 @@
 
 ## glmnet-based Logistic Regression for Scikit-Learn
 
-**glmpynet** is a high-performance Python wrapper for the `glmnet` library, providing a scikit-learn compatible estimator for penalized logistic regression.
+**glmpynet** is a Python package that provides a scikit-learn compatible interface to the high-performance `glmnet` library, focusing on penalized logistic regression for binary classification.
 
 This project aims to bridge the gap between the raw computational speed of the original Fortran/C++ `glmnet` code and the ease-of-use of the Python data science ecosystem. It provides a single, focused class that acts as a drop-in replacement for `sklearn.linear_model.LogisticRegression` for users who need the power of elastic-net regularization for binary classification.
 
