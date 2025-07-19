@@ -3,9 +3,14 @@
 Welcome to glmpynet's documentation!
 =====================================
 
-**glmpynet** is a Python package that provides a scikit-learn compatible interface to the high-performance `glmnet` library, focusing on penalized logistic regression for binary classification.
+**glmpynet** is a Python package providing a scikit-learn-compatible LogisticRegression API powered by the high-performance glmnetpp C++ library, focusing on logistic regression for binary classification. Built with Bazel and Conda for reproducibility, glmpynet ensures reliability through rigorous glmnetpp validation.
 
-This documentation will guide you through installing the package, understanding its core concepts, and using it in your own data science workflows.
+This documentation guides you through installing the package, using it in data science workflows, and understanding its design. Future versions may support multi-class classification and additional glmnetpp features.
+
+Project Status
+==============
+
+glmpynet is in early development, focusing on validating the glmnetpp environment and implementing a minimal LogisticRegression with default settings. See the ROADMAP for details.
 
 .. toctree::
    :maxdepth: 2
@@ -18,11 +23,13 @@ This documentation will guide you through installing the package, understanding 
    notebooks/index
    requirements
    architecture
+   development_guide
    project_information
 
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Use the following to navigate the documentation:
+* :ref:`genindex` - Alphabetical list of terms and classes
+* :ref:`modindex` - List of glmpynet modules and functions
+* :ref:`search` - Find specific topics or keywords

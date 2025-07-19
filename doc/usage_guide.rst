@@ -1,119 +1,85 @@
-.. _user_guide:
+.. _usage_guide:
 
-User Guide
-==========
+Usage Guide
+===========
 
-Welcome to the `glmpynet` User Guide. This guide provides a practical walkthrough of how to use the ``LogisticNet`` estimator to solve binary classification problems, integrating it seamlessly with the scikit-learn ecosystem.
+This guide explains how to use `glmpynet` to train and predict with regularized logistic regression models, designed to be as simple as using `scikit-learn`’s `LogisticRegression`. The initial version of `glmpynet` uses the `glmnetpp` C++ library with default settings (sourced from `glmnet`’s R documentation or online resources) for binary classification, without user-specified parameters like `C` or `penalty`.
 
-Basic Usage: Fitting and Predicting
------------------------------------
+Basic Usage
+-----------
 
-At its core, ``LogisticNet`` behaves just like any other scikit-learn classifier. You instantiate the model, then use the ``.fit()`` method with your training data and the ``.predict()`` method to make predictions.
+The `glmpynet.LogisticRegression` class provides a `scikit-learn`-compatible API with `fit` and `predict` methods. It works out of the box with `glmnetpp`’s default settings, making it easy to integrate into data science workflows.
+
+Example: Binary Classification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how to train a model and make predictions on a synthetic dataset.
 
 .. code-block:: python
 
-   from glmpynet import LogisticNet
+   import numpy as np
+   from glmpynet import LogisticRegression
    from sklearn.datasets import make_classification
    from sklearn.model_selection import train_test_split
+   from sklearn.metrics import accuracy_score
 
-   # 1. Create a synthetic dataset
-   X, y = make_classification(n_samples=1000, n_features=20, random_state=42)
-   X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+   # Generate a synthetic binary classification dataset
+   X, y = make_classification(
+       n_samples=1000,
+       n_features=20,
+       n_informative=5,
+       n_redundant=5,
+       n_classes=2,
+       random_state=42
+   )
+   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-   # 2. Initialize and fit the model
-   model = LogisticNet()
+   # Instantiate and fit the model
+   model = LogisticRegression()  # Uses glmnetpp defaults
    model.fit(X_train, y_train)
 
-   # 3. Make predictions
-   predictions = model.predict(X_test)
-   print(f"First 10 predictions: {predictions[:10]}")
+   # Make predictions
+   y_pred = model.predict(X_test)
 
-   # 4. Predict probabilities
-   probabilities = model.predict_proba(X_test)
-   print(f"First 5 predicted probabilities:\n{probabilities[:5]}")
+   # Evaluate accuracy
+   accuracy = accuracy_score(y_test, y_pred)
+   print(f"Model Accuracy: {accuracy:.2f}")
 
+Key Points
+~~~~~~~~~~
 
-Understanding Regularization
-----------------------------
+* **Data Input**: `X` should be a NumPy array or compatible format (e.g., pandas DataFrame, converted internally to NumPy). `y` should be a binary classification target (0 or 1).
+* **Defaults**: The model uses `glmnetpp`’s default settings for regularization and other parameters, sourced from `glmnet`’s R documentation or online resources.
+* **Output**: `predict` returns class labels (0 or 1). Future versions will add `predict_proba` for probabilities and parameters like `C` or `penalty`.
 
-The primary power of ``glmnet``, and therefore ``LogisticNet``, is its use of **elastic-net regularization**, which is a combination of L1 (Lasso) and L2 (Ridge) penalties. This is controlled by the ``alpha`` parameter.
+Integration with Scikit-learn
+-----------------------------
 
-* **Lasso Regression (`alpha=1.0`):** This penalty can shrink some feature coefficients to exactly zero, effectively performing automatic feature selection. It is useful when you have many features and suspect some are redundant or irrelevant.
-* **Ridge Regression (`alpha=0.0`):** This penalty shrinks coefficients towards zero but does not set them exactly to zero. It is effective at handling multicollinearity (when features are highly correlated).
-* **Elastic-Net (`0 < alpha < 1`):** This combines the properties of both, providing a balance between feature selection and handling correlated features.
+`glmpynet.LogisticRegression` is designed to work seamlessly with `scikit-learn` tools, such as pipelines and cross-validation.
 
-``LogisticNet`` simplifies the process by automatically finding the best regularization strength (lambda) via cross-validation during the ``.fit()`` call.
-
-Inspecting the Fitted Model
----------------------------
-
-After fitting, you can inspect the model's learned parameters just as you would with a scikit-learn model. The optimal coefficients and intercept found during cross-validation are stored as attributes.
-
-.. code-block:: python
-
-   # Assuming 'model' is the fitted model from the previous example
-
-   # Access the coefficients (weights) for each feature
-   print(f"Model coefficients shape: {model.coef_.shape}")
-   print(f"Number of non-zero coefficients: {np.count_nonzero(model.coef_)}")
-
-   # Access the intercept (bias) term
-   print(f"Model intercept: {model.intercept_}")
-
-
-Using `LogisticNet` in a Scikit-learn Pipeline
-----------------------------------------------
-
-A major advantage of ``LogisticNet`` is its compatibility with scikit-learn `Pipeline` objects. This allows you to chain data preprocessing steps (like scaling) with your model. It is highly recommended to scale your data before using a penalized regression model.
+Example: Using with a Pipeline
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
    from sklearn.pipeline import Pipeline
    from sklearn.preprocessing import StandardScaler
 
-   # Create a pipeline that first scales the data, then fits the model
+   # Create a pipeline
    pipeline = Pipeline([
        ('scaler', StandardScaler()),
-       ('logistic_net', LogisticNet(alpha=0.8))
+       ('model', LogisticRegression())
    ])
 
-   # Fit the entire pipeline on the training data
+   # Fit the pipeline
    pipeline.fit(X_train, y_train)
 
-   # Make predictions using the pipeline
-   # The test data is automatically scaled before prediction
-   pipeline_preds = pipeline.predict(X_test)
+   # Predict and evaluate
+   y_pred = pipeline.predict(X_test)
+   accuracy = accuracy_score(y_test, y_pred)
+   print(f"Pipeline Accuracy: {accuracy:.2f}")
 
-   print(f"Pipeline accuracy: {accuracy_score(y_test, pipeline_preds):.2f}")
+Next Steps
+----------
 
-
-Hyperparameter Tuning with GridSearchCV
----------------------------------------
-
-You can use scikit-learn's ``GridSearchCV`` to find the best hyperparameters for ``LogisticNet``, such as the optimal ``alpha`` value.
-
-.. code-block:: python
-
-   from sklearn.model_selection import GridSearchCV
-
-   # Define the pipeline
-   pipeline = Pipeline([
-       ('scaler', StandardScaler()),
-       ('logistic_net', LogisticNet())
-   ])
-
-   # Define the parameter grid to search over
-   # We will search for the best alpha value
-   param_grid = {
-       'logistic_net__alpha': [0.1, 0.5, 0.9, 1.0]
-   }
-
-   # Set up and run the grid search with 5-fold cross-validation
-   grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='roc_auc')
-   grid_search.fit(X_train, y_train)
-
-   # Print the best parameters found
-   print(f"Best alpha value: {grid_search.best_params_['logistic_net__alpha']}")
-   print(f"Best cross-validated AUC score: {grid_search.best_score_:.2f}")
-
-This demonstrates how ``LogisticNet`` can be fully integrated into a standard machine learning workflow, leveraging the power of the scikit-learn ecosystem.
+To explore practical examples, see :ref:`examples`. For Jupyter notebooks with detailed workflows, visit :ref:`notebooks`. To understand the `glmnetpp`-based design, check :ref:`architecture`.

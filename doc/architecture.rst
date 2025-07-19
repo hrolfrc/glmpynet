@@ -6,78 +6,67 @@ Architecture and Design
 1. Introduction
 ---------------
 
-This document outlines the technical architecture of the ``glmpynet`` library. The primary goal of this project is to provide a simple, high-performance, and user-friendly Python interface for the powerful `glmnet` backend, specifically for penalized logistic regression. This document details the relationship between the Python wrapper and the underlying compiled code, as well as the key design decisions made.
+This document outlines the technical architecture of the `glmpynet` library. The primary goal is to provide a simple, high-performance, and user-friendly Python interface for the `glmnetpp` C++ library, specifically for regularized logistic regression. This document details the relationship between the Python wrapper and the underlying C++ code, as well as key design decisions.
 
 2. Core Philosophy: The Wrapper Pattern
 ---------------------------------------
 
-The fundamental design of `glmpynet` is the **Wrapper Pattern**. The project does not re-implement the core logistic regression or regularization algorithms. Instead, it provides a clean, Pythonic interface that translates user commands into calls to the highly optimized, battle-tested `glmnet` Fortran/C++ library.
+The fundamental design of `glmpynet` is the **Wrapper Pattern**. The project does not re-implement logistic regression or regularization algorithms. Instead, it provides a clean, Pythonic interface that translates user commands into calls to the optimized `glmnetpp` C++ library.
 
-This approach provides the best of both worlds:
-
-* **Performance:** Users get the raw computational speed of a compiled backend.
-* **Usability:** Users interact with the library through the familiar and intuitive scikit-learn API.
+This approach provides:
+* **Performance**: Leverages `glmnetpp`’s computational speed.
+* **Usability**: Offers a familiar `scikit-learn` API that works with minimal configuration.
 
 3. Component Layers
 -------------------
 
-The architecture can be understood as three distinct layers:
+The architecture consists of three layers:
 
-#. **The `glmnet` Backend (The Engine):** This is the original, compiled Fortran/C++ code. Its responsibility is to perform the computationally intensive task of fitting the entire regularization path for an elastic-net model. It is treated as a high-performance "black box."
+#. **The `glmnetpp` Backend (The Engine)**: The compiled C++ library (header-only) performs the computationally intensive task of fitting regularized logistic regression models. It is treated as a high-performance black box.
 
-#. **The Python Wrapper (`glmpynet`) (The Interface):** This is the core of our project. It is a thin layer of Python code responsible for:
+#. **The Python Wrapper (`glmpynet`) (The Interface)**: A thin layer of Python code responsible for:
+   * Preparing and validating data (e.g., converting NumPy arrays to Eigen matrices).
+   * Calling the `glmnetpp` backend with default settings.
+   * Interpreting and returning results in a `scikit-learn`-compatible format.
 
-   * Preparing and validating data (e.g., converting pandas DataFrames to NumPy arrays).
-   * Calling the compiled backend with the correct arguments.
-   * Interpreting the results returned from the backend.
-   * Presenting those results to the user in a standard, predictable format.
+#. **The Scikit-learn API (The Contract)**: The `glmpynet.LogisticRegression` class implements `fit` and `predict` methods, ensuring interoperability with `scikit-learn` tools (e.g., pipelines). The initial version uses `glmnetpp`’s default settings (sourced from `glmnet`’s R documentation or online resources).
 
-#. **The Scikit-learn API (The Contract):** To ensure a seamless user experience, `glmpynet` strictly adheres to the scikit-learn estimator API. This means our main class implements standard methods like ``.fit()``, ``.predict()``, and ``.predict_proba()``. This adherence is a core design principle, as it guarantees interoperability with the entire scikit-learn ecosystem (e.g., `Pipeline`, `GridSearchCV`).
+4. The `LogisticRegression` Class: Bridging the Gap
+---------------------------------------------------
 
-4. The `LogisticNet` Class: Bridging the Gap
---------------------------------------------
+The `LogisticRegression` class bridges the `scikit-learn` API and the `glmnetpp` backend.
 
-The central component of the wrapper is the ``LogisticNet`` class. It acts as the bridge between the simple, user-friendly scikit-learn API and the more complex `glmnet` backend.
+``__init__(self)``
+~~~~~~~~~~~~~~~~~~
 
-``__init__(self, alpha, n_lambda, ...)``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* **Responsibility:** To capture and store the model's hyperparameters.
-* **Mapping:** Parameters like ``alpha`` are stored directly. Other parameters control how the `glmnet` path is computed.
+* **Responsibility**: Initializes the model with `glmnetpp`’s default settings (no user-specified parameters like `C` or `penalty` in the initial version).
+* **Mapping**: Configures the backend to use defaults sourced from `glmnet`’s R documentation or online resources.
 
 ``fit(self, X, y)``
 ~~~~~~~~~~~~~~~~~~~
 
-This is the most critical method in the wrapper. It orchestrates the entire model training process.
+* **Responsibility**: Trains the model using `glmnetpp`.
+* **Process**:
+  1. Validates and converts input `X` and `y` to NumPy arrays, then to Eigen matrices for `glmnetpp`.
+  2. Calls a `glmnetpp` function (e.g., `elnet_driver`) with default settings.
+  3. Stores the resulting coefficients and intercept as `self.coef_` and `self.intercept_`, following `scikit-learn` conventions.
 
-#. **Data Preparation:** It converts the input `X` and `y` into the format expected by the `glmnet` backend (typically a NumPy array).
+``predict(self, X)``
+~~~~~~~~~~~~~~~~~~~~
 
-#. **Path Calculation:** It calls the `glmnet` function to compute the full elastic-net regularization path. This returns a set of coefficients for many different values of the regularization strength, `lambda`.
-
-#. **Model Selection via Cross-Validation:** The key design decision is to **hide the complexity of the regularization path** from the user. The ``fit`` method automatically performs cross-validation *across the computed path* to find the single best `lambda` value (e.g., the one that maximizes AUC or minimizes log-loss).
-
-#. **Store Final Coefficients:** Once the best `lambda` is identified, the corresponding coefficients and intercept are stored as ``self.coef_`` and ``self.intercept_``, respectively. This follows the scikit-learn convention and presents the user with a single, final model.
-
-``predict(self, X)`` and ``predict_proba(self, X)``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* **Responsibility:** To perform inference on new data.
-* **Mapping:** These methods are simple. They use the final ``self.coef_`` and ``self.intercept_`` (which were selected during the ``.fit()`` call) to make predictions. They do not need to interact with the `glmnet` backend directly.
+* **Responsibility**: Makes predictions on new data.
+* **Process**: Uses `self.coef_` and `self.intercept_` to compute predictions, without direct `glmnetpp` calls.
 
 5. Data Flow
 ------------
 
-The data flow is designed to be simple and efficient:
-
-#. The user provides data as a NumPy array or pandas DataFrame.
-#. The ``LogisticNet`` class validates this data and converts it into a standard NumPy array.
-#. This NumPy array is passed to the compiled `glmnet` backend.
-#. The backend returns the results (coefficients for the full path).
-#. The Python wrapper processes these results, performs cross-validation, and stores the final model parameters.
+The data flow is simple:
+1. The user provides data as NumPy arrays.
+2. The `LogisticRegression` class validates and converts data to Eigen matrices.
+3. The `glmnetpp` backend processes the data with default settings.
+4. The wrapper returns results (e.g., coefficients, predictions) in a `scikit-learn`-compatible format.
 
 6. Key Design Decision: Adopting the Scikit-learn API
 ------------------------------------------------------
 
-A conscious decision was made to adopt the scikit-learn API rather than creating a direct, 1-to-1 Python port of the R `glmnet` API. The R API exposes the full regularization path to the user, requiring them to manually select a lambda.
-
-While powerful, this approach is not "Pythonic" and would prevent integration with the scikit-learn ecosystem. By choosing to hide this complexity and perform model selection automatically within the ``.fit()`` method, `glmpynet` provides a much more intuitive and user-friendly experience for the vast majority of Python data scientists.
+The `scikit-learn` API was chosen over a direct port of the R `glmnet` API to ensure a Pythonic, user-friendly experience. The initial version simplifies usage by using `glmnetpp`’s defaults, hiding regularization complexity (e.g., `lambda` selection). This ensures seamless integration with `scikit-learn` tools while leveraging `glmnetpp`’s performance.

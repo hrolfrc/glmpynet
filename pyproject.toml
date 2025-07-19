@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glmpynet"
-version = "0.4.9"
+version = "0.4.10"
 description = "A scikit-learn compatible wrapper for glmnet-based logistic regression."
 readme = "README.md"
 authors = [{name = "Rolf Carlson", email = "hrolfrc@gmail.com"}]
