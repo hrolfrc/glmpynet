@@ -8,13 +8,13 @@ This guide provides the essential steps to install `glmpynet` and run your first
 Installation
 ------------
 
-The recommended way to install `glmpynet` is from the Python Package Index (PyPI) using `pip`. Ensure you have Python 3.8 or higher, Conda (with `mamba` recommended), Bazel, and a C++ toolchain (GCC 9.3.0+ or Clang 10.0.0+) installed.
+Install `glmpynet` via PyPI with `pip`. Ensure you have Python 3.8 or higher:
 
 .. code-block:: bash
 
    pip install glmpynet
 
-This will install the package with dependencies like `numpy`. For development, set up a Conda environment with `mamba`, Bazel, OpenMP, and Eigen, as detailed in :ref:`development_guide`.
+This installs `glmpynet` with `numpy`. For development setup, see :ref:`environment`.
 
 Quick Start
 -----------
@@ -56,4 +56,4 @@ The following example trains a model on synthetic data.
 Next Steps
 ----------
 
-You have now trained your first `glmpynet` model. To learn more about usage, examples, and the `glmnetpp`-based architecture, proceed to the :ref:`usage_guide` or :ref:`architecture`.
+You have now trained your first `glmpynet` model. To learn more about usage, examples, and the `glmnetpp`-based architecture, proceed to :ref:`usage_guide` or :ref:`architecture`.

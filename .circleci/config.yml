@@ -4,9 +4,7 @@ version: 2.1
 # ORBS: Reusable packages of CircleCI configuration.
 # ------------------------------------------------------------------------------
 orbs:
-  # Simplifies common Python operations.
   python: circleci/python@2.1.1
-  # Simplifies uploading coverage reports to Codecov.
   codecov: codecov/codecov@5
 
 # ------------------------------------------------------------------------------
@@ -15,82 +13,103 @@ orbs:
 jobs:
   unit-test:
     docker:
-      - image: cimg/python:3.11
+      - image: continuumio/miniconda3
     working_directory: ~/repo
     steps:
       - checkout
       - run:
           name: Verify critical files
-          # Check for the new project structure.
           command: |
             ls -l README.md pyproject.toml glmpynet/logistic_regression.py || exit 1
+      - restore_cache:
+          keys:
+            - v1-conda-{{ checksum "environment.yml" }}
       - run:
-          name: Install system dependencies
-          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
-      # Implement a two-step process for installations that require numpy.
-      - run:
-          name: Install build-time dependencies first
+          name: Set up Conda environment
           command: |
-            pip install numpy
-      - run:
-          name: Install Python dependencies
-          command: pip install -r requirements.txt
+            conda config --set always_yes yes
+            conda env update -f environment.yml --prune
+      - save_cache:
+          paths:
+            - /home/circleci/miniconda
+          key: v1-conda-{{ checksum "environment.yml" }}
       - run:
           name: Run unit tests
           command: |
-            python -m pytest tests/unit/ -v --cov=glmpynet --cov-report=xml
+            conda init bash
+            source ~/.bashrc
+            conda activate glmpynet
+            conda run -n glmpynet python -m pytest tests/unit/ -v --cov=glmpynet --cov-report=xml
       - store_artifacts:
           path: coverage.xml
       - codecov/upload:
           token: CODECOV_TOKEN
   integration-test:
     docker:
-      - image: cimg/python:3.11
+      - image: continuumio/miniconda3
     working_directory: ~/repo
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-conda-{{ checksum "environment.yml" }}
       - run:
-          name: Install system dependencies
-          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
-      - run:
-          name: Install build-time dependencies first
+          name: Set up Conda environment
           command: |
-            pip install numpy
-      - run:
-          name: Install Python dependencies
-          command: pip install -r requirements.txt
+            conda config --set always_yes yes
+            conda env update -f environment.yml --prune
+      - save_cache:
+          paths:
+            - /home/circleci/miniconda
+          key: v1-conda-{{ checksum "environment.yml" }}
       - run:
           name: Run integration tests
           command: |
-            python -m pytest tests/e2e/ -v --log-file=integration.log
+            conda init bash
+            source ~/.bashrc
+            conda activate glmpynet
+            conda run -n glmpynet python -m pytest tests/e2e/ -v --log-file=integration.log
       - store_artifacts:
           path: integration.log
   deploy:
     docker:
-      - image: cimg/python:3.11
+      - image: continuumio/miniconda3
     working_directory: ~/repo
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-conda-{{ checksum "environment.yml" }}
       - run:
-          name: Install system dependencies
-          command: sudo apt-get update && sudo apt-get install -y g++ libeigen3-dev pandoc
-      - run:
-          name: Install Python dependencies
-          command: pip install -r requirements.txt
+          name: Set up Conda environment
+          command: |
+            conda config --set always_yes yes
+            conda env update -f environment.yml --prune
+      - save_cache:
+          paths:
+            - /home/circleci/miniconda
+          key: v1-conda-{{ checksum "environment.yml" }}
       - run:
           name: Build documentation
           command: |
-            cd doc
-            make html
-            cd ..
+            conda init bash
+            source ~/.bashrc
+            conda activate glmpynet
+            conda run -n glmpynet sphinx-build -b html doc/ doc/_build/html
       - run:
           name: Build distribution packages
           command: |
-            python3 -m build
+            conda init bash
+            source ~/.bashrc
+            conda activate glmpynet
+            conda run -n glmpynet python -m build
       - run:
           name: Upload to PyPI
           command: |
-            python3 -m twine upload dist/* --verbose
+            conda init bash
+            source ~/.bashrc
+            conda activate glmpynet
+            conda run -n glmpynet python -m twine upload dist/* --verbose
       - store_artifacts:
           path: doc/_build/html/
           destination: doc
