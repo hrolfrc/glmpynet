@@ -41,7 +41,7 @@ jobs:
           name: Run unit tests
           command: |
             conda init bash
-            source Ones ~/.bashrc
+            source ~/.bashrc
             conda activate glmpynet
             conda run -n glmpynet python -m pytest tests/unit/ -v --cov=glmpynet --cov-report=xml
       - store_artifacts:
