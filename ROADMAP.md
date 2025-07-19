@@ -1,60 +1,60 @@
-# glmpynet: Project Roadmap
+# glmpynet ROADMAP
 
-This document outlines the development plan for `glmpynet`. With the initial documentation and API stubs in place for binary logistic regression, this roadmap focuses on implementing the core functionality and expanding the library to support the other powerful models offered by the `glmnet` backend.
+## Project Vision
+`glmpynet` is a Python package delivering a high-performance `LogisticRegression` implementation using the `glmnetpp` C++ library, designed to mirror `scikit-learn`’s `LogisticRegression` API for user familiarity. Key objectives:
+- **Performance**: Utilize `glmnetpp`’s optimized C++ solvers for fast logistic regression.
+- **Reliability**: Ensure robustness through comprehensive testing, error handling, and bug isolation.
+- **Reproducibility**: Use Bazel and Conda for consistent builds and environments.
+- **User Familiarity**: Provide a `scikit-learn`-like API that works with minimal configuration.
 
-## Foundational Priority: Core Implementation & Quality
+The initial version focuses on core methods (`fit`, `predict`) using `glmnetpp`’s default settings (sourced from `glmnet`’s R documentation or online resources), deferring parameters like `C` and `penalty` to later phases.
 
-This is the ongoing priority to ensure the project is robust, reliable, and maintainable.
+## Milestones
+1. **Establish Documentation and Validate `glmnetpp` Environment**:
+   - Draft Sphinx documentation covering installation, usage (defaults-only `LogisticRegression`), and architecture.
+   - Set up a Conda environment with `mamba`, installing Python 3.8+, Bazel, a C++ toolchain (GCC 9.3.0+ or Clang 10.0.0+), OpenMP, and Eigen, per `glmnetpp`’s `README.md`.
+   - Build `glmnetpp` using `bazel build //:glmnetpp` (header-only library).
+   - Run *all* `glmnetpp` tests (`bazel test -c dbg //test/...`) to confirm the library’s functionality.
+   - **Goal**: Create clear documentation and ensure a reliable C++ foundation.
 
-### 1. Implement the `LogisticNet` Core
+2. **Minimal `LogisticRegression` Binding**:
+   - Create a `pybind11` binding for a core `glmnetpp` function (e.g., `elnet_driver`) to implement `glmpynet.LogisticRegression` with `fit` and `predict` methods.
+   - Use `glmnetpp`’s default settings (sourced from `glmnet`’s R documentation or online resources).
+   - Test locally with Python (`pytest`) to verify compatibility with `scikit-learn`’s default `LogisticRegression` behavior.
+   - Update Sphinx documentation with usage details.
+   - **Goal**: Deliver a functional, minimal `LogisticRegression` that works out of the box.
 
-* **Goal:** To build the working backend for the `LogisticNet` class, including the interface to the compiled `glmnet` code and the automatic cross-validation for lambda selection.
-* **Status:** In progress.
+3. **Full `LogisticRegression` API**:
+   - Extend the binding to support all `scikit-learn` `LogisticRegression` methods (`score`, `predict_proba`) and parameters (`C`, `penalty`, `max_iter`), mapping to `glmnetpp` equivalents.
+   - Implement robust error handling (e.g., input validation, C++ exception handling, logging).
+   - Test against `scikit-learn` benchmarks for correctness.
+   - Update Sphinx documentation with full API details.
+   - **Goal**: Provide a complete, `scikit-learn`-compatible API with enhanced reliability.
 
-### 2. Increase Test Coverage to >90%
+4. **CI/CD and PyPI Release**:
+   - Set up CircleCI to replicate the Conda/Bazel environment, build `glmnetpp` and `glmpynet`, and run all `glmnetpp` tests and Python tests.
+   - Package `glmpynet` for PyPI, ensuring reproducible builds.
+   - Release the initial defaults-only version to PyPI.
+   - **Goal**: Deliver a stable, tested package to users.
 
-* **Goal:** To ensure all critical application logic is verified by automated tests, providing confidence in the correctness of the wrapper.
-* **Strategy:**
-  * Write unit tests for all data preparation and result parsing logic.
-  * Create integration tests that verify the interaction with the `glmnet` backend using small, controlled datasets.
-  * Ensure all scikit-learn compatibility checks are passed.
+5. **Enhancements**:
+   - Add advanced features (e.g., multi-class support, custom `glmnetpp` parameters).
+   - Optimize performance (e.g., tune `glmnetpp` solvers).
+   - Expand Sphinx documentation with advanced use cases and benchmarks.
+   - **Goal**: Enhance functionality for broader adoption.
 
-## Priority 1: Linear Regression (Gaussian Models)
+## Timeline (Tentative)
+- **Milestone 1**: 2-3 weeks (Sphinx documentation, environment setup, `glmnetpp` validation).
+- **Milestone 2**: 2-3 weeks (minimal binding and testing).
+- **Milestone 3**: 3-4 weeks (full API and error handling).
+- **Milestone 4**: 2-3 weeks (CI/CD and PyPI release).
+- **Milestone 5**: Ongoing (enhancements).
 
-This is the most common use case for `glmnet` after logistic regression and is the highest priority for expansion.
+## Open Questions
+- Specific `glmnetpp` functions to bind for logistic regression.
+- Alignment of `glmnetpp`’s default settings with `scikit-learn`’s defaults.
+- Platform-specific build considerations (e.g., Linux vs. macOS).
 
-### Create a `LinearNet` Estimator
-
-* **Goal:** To provide a scikit-learn compatible regressor for performing regularized linear regression.
-* **Implementation Steps:**
-  1. Create a new `LinearNet` class that inherits from `sklearn.base.RegressorMixin`.
-  2. Implement the `.fit()` method to call the `glmnet` backend with the "gaussian" family option.
-  3. Implement the `.predict()` method to return continuous value predictions.
-  4. Add comprehensive tests to verify its performance and scikit-learn compatibility.
-
-## Priority 2: Multi-Class Classification
-
-This feature extends the library's classification capabilities beyond binary problems.
-
-### Enhance `LogisticNet` or Create `MultinomialNet`
-
-* **Goal:** To support multi-class classification using the multinomial logistic regression capabilities of `glmnet`.
-* **Implementation Steps:**
-  1. Decide on the best API: either add multi-class handling to the existing `LogisticNet` or create a new, dedicated `MultinomialNet` class.
-  2. Implement the `.fit()` method to call the `glmnet` backend with the "multinomial" family option.
-  3. Ensure that `.predict()` and `.predict_proba()` correctly handle multi-class outputs (e.g., shape of `(n_samples, n_classes)` for probabilities).
-  4. Add tests for multi-class scenarios.
-
-## Priority 3: Other `glmnet` Models
-
-These features would round out the library, providing wrappers for the more specialized models available in `glmnet`.
-
-### 1. Add Cox Proportional Hazards Model
-
-* **Goal:** To provide a wrapper for survival analysis.
-* **Action:** Create a `CoxNet` class that interfaces with `glmnet`'s "cox" family, designed for time-to-event data.
-
-### 2. Add Poisson Regression Model
-
-* **Goal:** To provide a wrapper for modeling count data.
-* **Action:** Create a `PoissonNet` class that interfaces with `glmnet`'s "poisson" family.
+**Analysis**:
+- **Changes Made**: Added Sphinx drafting to Milestone 1 and removed prioritization of logistic regression tests, specifying *all* tests (`bazel test -c dbg //test/...`). Extended Milestone 1’s timeline slightly to account for documentation.
+- **Alignment with Goals**: The roadmap supports simplicity (defaults-only initial binding), robustness (full `glmnetpp` testing), and momentum (clear milestones). It aligns with your emphasis on a verified library and avoids the previous failure’s environment issues.
