@@ -40,4 +40,4 @@ See `CONTRIBUTING.md` in the repository for specific guidelines.
 License
 ~~~~~~~
 
-`glmpynet` is distributed under the MIT License, a permissive open-source license allowing broad use, modification, and distribution. See the `LICENSE` file in the repository for the full text.
+`glmpynet` is distributed under the GNU General Public License version 2 (GPL-2.0-only). This copyleft license requires derivative works to be licensed under the same terms. See the `LICENSE` file in the repository for the full text.
