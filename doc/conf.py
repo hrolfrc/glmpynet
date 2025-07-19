@@ -4,7 +4,7 @@ project = 'glmpynet'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.4.11'
+release = '0.4.12'
 
 import os
 import sys
