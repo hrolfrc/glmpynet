@@ -13,7 +13,6 @@ dependencies:
   - gcc>=9.3.0  # or clang>=10.0.0 for macOS
   - openmp
   - eigen
-  - curl
   - numpy
   - pandas
   - scikit-learn

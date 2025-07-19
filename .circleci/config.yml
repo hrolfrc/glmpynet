@@ -21,6 +21,10 @@ jobs:
           name: Verify critical files
           command: |
             ls -l README.md pyproject.toml glmpynet/logistic_regression.py || exit 1
+      - run:
+          name: Install curl for Codecov
+          command: |
+            apt-get update && apt-get install -y curl
       - restore_cache:
           keys:
             - v1-conda-{{ checksum "environment.yml" }}
@@ -37,7 +41,7 @@ jobs:
           name: Run unit tests
           command: |
             conda init bash
-            source ~/.bashrc
+            source Ones ~/.bashrc
             conda activate glmpynet
             conda run -n glmpynet python -m pytest tests/unit/ -v --cov=glmpynet --cov-report=xml
       - store_artifacts:
