@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Install curl for Codecov
           command: |
-            apt-get update && apt-get install -y curl
+            apt-get update && apt-get install -y curl gpg
       - restore_cache:
           keys:
             - v1-conda-{{ checksum "environment.yml" }}
