@@ -23,7 +23,7 @@ Project Status
    notebooks/index
    environment
    architecture
-   development_guide
+   development/index
    project_information
 
 Indices and tables
