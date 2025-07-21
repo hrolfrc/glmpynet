@@ -1,16 +1,16 @@
 """
-This module contains the LogisticNet class, a scikit-learn compatible wrapper
+This module contains the LogisticRegression class, a scikit-learn compatible wrapper
 for penalized logistic regression.
 """
 
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression as SklearnLogisticRegression
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 
 
 # noinspection PyAttributeOutsideInit
-class LogisticNet(ClassifierMixin, BaseEstimator):
+class LogisticRegression(ClassifierMixin, BaseEstimator):
     """
     A scikit-learn compatible estimator for penalized logistic regression.
 
@@ -40,7 +40,7 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         The number of features seen during `fit`.
     is_fitted_ : bool
         A boolean indicating that the estimator has been fitted.
-    _estimator : LogisticRegression
+    _estimator : SklearnLogisticRegression
         Internal LogisticRegression instance for the facade.
 
     Examples
@@ -48,9 +48,9 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
     >>> from sklearn.datasets import make_classification
     >>> from sklearn.metrics import accuracy_score
     >>> X, y = make_classification(n_features=10, n_informative=5, random_state=42)
-    >>> model = LogisticNet()
+    >>> model = LogisticRegression()
     >>> model.fit(X, y)
-    LogisticNet()
+    LogisticRegression()
     >>> accuracy = accuracy_score(y, model.predict(X))
     >>> print(f"Accuracy: {accuracy:.2f}")
     Accuracy: 0.87
@@ -58,11 +58,11 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
 
     def __init__(self, C: float = 1.0, penalty: str = "l2"):
         """
-        Initializes the LogisticNet model.
+        Initializes the LogisticRegression model.
         """
         self.C = C
         self.penalty = penalty
-        self._estimator = LogisticRegression(
+        self._estimator = SklearnLogisticRegression(
             C=self.C,
             penalty=self.penalty,
             solver="liblinear"
@@ -145,7 +145,6 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         params : dict
             Parameter names mapped to their values.
         """
-        # Get base parameters from LogisticRegression, subset to C and penalty
         params = {"C": self.C, "penalty": self.penalty}
         return params
 
@@ -163,9 +162,7 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         self
             Estimator instance.
         """
-        # Update LogisticNet parameters
         super().set_params(**params)
-        # Filter parameters for LogisticRegression
         estimator_params = {k: v for k, v in params.items() if k in ["C", "penalty"]}
         self._estimator.set_params(**estimator_params)
         return self
@@ -174,5 +171,4 @@ class LogisticNet(ClassifierMixin, BaseEstimator):
         """
         Define estimator tags for capabilities and type.
         """
-        # Use LogisticRegression's tags directly
-        return LogisticRegression().__sklearn_tags__()
+        return SklearnLogisticRegression().__sklearn_tags__()
