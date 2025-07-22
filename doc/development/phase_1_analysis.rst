@@ -37,7 +37,8 @@ Requirements Analysis
 
 The analysis produced a comprehensive list of requirements, which are detailed below. Each requirement is assigned a unique identifier (e.g., ``(R-SYS-01)``) for traceability in the corresponding action plan.
 
-### Stated Requirements (from ``README.md``)
+Stated Requirements (from ``README.md``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These requirements were explicitly mentioned in the project's documentation.
 
@@ -47,7 +48,8 @@ These requirements were explicitly mentioned in the project's documentation.
 (R-SYS-02) Bazel
     An installation of the Bazel build tool.
 
-### Discovered Requirements (from Static Analysis)
+Discovered Requirements (from Static Analysis)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These requirements were not explicitly stated in the main documentation but were discovered through analysis of the build configuration files.
 

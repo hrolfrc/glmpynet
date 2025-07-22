@@ -32,6 +32,7 @@ The new ``glmpynet_binding.cpp`` file will contain a single, primary
 wrapper function with a clear, simple signature designed for Python.
 
 **Proposed Function Signature:**
+
 .. code-block:: cpp
 
    // Inside glmpynet_binding.cpp
@@ -42,33 +43,23 @@ wrapper function with a clear, simple signature designed for Python.
        // ... other key parameters like nlam, flmin, etc.
    );
 
-**Internal Logic:**
+Internal Logic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 This function will be responsible for:
+
 1.  Accepting NumPy arrays and scalar parameters from Python.
-2.  Converting the NumPy arrays into the ``Eigen::Matrix`` data structures
-    that ``glmnetpp`` requires.
-3.  Creating a "data pack" of all the other required parameters (``maxit``,
-    ``isd``, ``intr``, etc.), setting them to sensible defaults based on the
-    original R library.
-4.  Calling the complex, templated ``glmnetpp::transl::lognet`` function with
-    all the prepared data.
-5.  Extracting the key results (e.g., the coefficient matrix ``ca`` and the
-    intercept vector ``a0``) from the output.
+2.  Converting the NumPy arrays into the ``Eigen::Matrix`` data structures that ``glmnetpp`` requires.
+3.  Creating a "data pack" of all the other required parameters (``maxit``, ``isd``, ``intr``, etc.), setting them to sensible defaults based on the original R library.
+4.  Calling the complex, templated ``glmnetpp::transl::lognet`` function with all the prepared data.
+5.  Extracting the key results (e.g., the coefficient matrix ``ca`` and the intercept vector ``a0``) from the output.
 6.  Packaging these results into a Python dictionary and returning it.
 
 Key Challenges
 --------------
 
-1.  **Data Marshaling:** The primary technical task is the efficient and
-    correct conversion of data between Python/NumPy and C++/Eigen. This
-    includes handling data types, matrix dimensions, and memory layout
-    (e.g., row-major vs. column-major).
+1.  **Data Marshaling:** The primary technical task is the efficient and correct conversion of data between Python/NumPy and C++/Eigen. This includes handling data types, matrix dimensions, and memory layout (e.g., row-major vs. column-major).
 
-2.  **Parameter Mapping:** We must carefully analyze the numerous parameters
-    of the ``transl::lognet`` function and determine which ones should be
-    exposed to the Python user and which should be set to fixed, sensible
-    defaults.
+2.  **Parameter Mapping:** We must carefully analyze the numerous parameters of the ``transl::lognet`` function and determine which ones should be exposed to the Python user and which should be set to fixed, sensible defaults.
 
-3.  **Error Handling:** The C++ wrapper must catch any exceptions thrown by
-    the ``glmnetpp`` engine and translate them into Python exceptions to
-    ensure the binding is robust.
+3.  **Error Handling:** The C++ wrapper must catch any exceptions thrown by the ``glmnetpp`` engine and translate them into Python exceptions to ensure the binding is robust.

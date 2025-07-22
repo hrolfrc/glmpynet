@@ -24,6 +24,7 @@ See the :doc:`development/development_roadmap` for the full development plan.
    usage_guide
    api_reference
    examples
+   notebooks/index
 
 .. toctree::
    :maxdepth: 2

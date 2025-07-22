@@ -36,6 +36,8 @@ underlying ``glmnet`` engine. This project will adopt a **hybrid API** to
 provide the best of both worlds: simplicity by default, with power on demand.
 
 **Rationale:**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 This approach is superior because it serves two distinct user groups without
 compromising the experience for either:
 
@@ -52,6 +54,8 @@ compromising the experience for either:
     parameters directly to the C++ engine for maximum performance and control.
 
 **Implementation:**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The internal ``fit`` method will be responsible for translating the user-provided
 parameters into the format required by the C++ binding, prioritizing the
 ``glmnet``-native parameters if they are provided.
@@ -96,6 +100,7 @@ The ``glmnet`` library is capable of more than just logistic regression
 this in mind.
 
 A potential future architecture would involve:
+
 * A base class, ``GlmNetEstimator``, that handles the common logic of
     parameter translation and interaction with the C++ binding.
 * Specific child classes for different models, such as ``LogisticRegression``,

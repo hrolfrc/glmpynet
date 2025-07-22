@@ -3,7 +3,7 @@
 Example Notebooks
 =================
 
-The following Jupyter notebooks demonstrate the usage of `LogisticNet` in various scenarios:
+The following Jupyter notebooks demonstrate the usage of `LogisticRegression` in various scenarios:
 
 .. toctree::
    :maxdepth: 1

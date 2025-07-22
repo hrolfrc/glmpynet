@@ -4,11 +4,11 @@ project = 'glmpynet'
 # noinspection PyShadowingBuiltins
 copyright = '2025, Rolf Carlson'
 author = 'Rolf Carlson'
-release = '0.5.5'
+release = '0.5.6'
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../glmpynet'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
