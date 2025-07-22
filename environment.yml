@@ -5,23 +5,24 @@
 # conda activate glmpynet
 name: glmpynet
 channels:
+# - anaconda
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
-  - bazel
-  - gcc>=9.3.0  # or clang>=10.0.0 for macOS
-  - openmp
-  - eigen
-  - numpy
-  - pandas
+  - python=3.11
   - scikit-learn
+  - numpy
+  - scipy
+  - pandas
   - pybind11
   - pytest
   - pytest-cov
   - pytest-mock
   - sphinx
   - sphinx_rtd_theme
+  - nbsphinx
+  - twine
+  - build
   - nbsphinx
   - twine
   - build
