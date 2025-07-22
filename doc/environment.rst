@@ -1,12 +1,12 @@
 .. _environment:
 
 Environment Setup
-================
+=================
 
 This page describes how to set up the Conda environment for using or developing `glmpynet`, a Python package providing a scikit-learn-compatible `LogisticRegression` API powered by `glmnetpp` for regularized logistic regression.
 
 User Environment
----------------
+----------------
 
 To use `glmpynet`, you need Python 3.8 or higher. Install via PyPI:
 
@@ -17,7 +17,7 @@ To use `glmpynet`, you need Python 3.8 or higher. Install via PyPI:
 This installs `glmpynet` and `numpy`, with the precompiled `glmnetpp` C++ library included, requiring no additional setup.
 
 Developer Environment
---------------------
+---------------------
 
 To develop `glmpynet` (e.g., build, test, or contribute), set up a Conda environment with the following dependencies:
 - Python 3.8
@@ -30,7 +30,7 @@ To develop `glmpynet` (e.g., build, test, or contribute), set up a Conda environ
 1. **Install Miniconda**:
    - Download from https://docs.conda.io/en/latest/miniconda.html for your platform (Linux, macOS, Windows).
    - Install:
-     .. code-block:: bash
+   .. code-block:: bash
 
         bash Miniconda3-latest-<platform>.sh
 
@@ -39,14 +39,14 @@ To develop `glmpynet` (e.g., build, test, or contribute), set up a Conda environ
 2. **Create or Update the Environment**:
    - Save `environment.yml` (available in the project root) or use the one below.
    - Create or update the `glmpynet` environment:
-     .. code-block:: bash
+   .. code-block:: bash
 
         conda env update -f environment.yml --prune
         conda activate glmpynet
 
 3. **Verify Setup**:
    - Check versions:
-     .. code-block:: bash
+   .. code-block:: bash
 
         python --version  # Should show 3.8.x
         bazel --version
@@ -81,7 +81,7 @@ To develop `glmpynet` (e.g., build, test, or contribute), set up a Conda environ
      - build
 
 Scikit-learn Estimator Guidelines
---------------------------------
+---------------------------------
 
 To ensure `glmpynet.LogisticRegression` is compatible with `scikit-learn`, developers must follow these guidelines from the `scikit-learn developer guide <https://scikit-learn.org/stable/developers/develop.html>`_:
 - **Keyword Arguments**: The `__init__` method has no parameters (uses `glmnetpp` defaults), allowing instantiation without arguments (e.g., `LogisticRegression()`).
@@ -92,4 +92,4 @@ To ensure `glmpynet.LogisticRegression` is compatible with `scikit-learn`, devel
 - **Testing**: Pass `check_estimator` tests for API compliance.
 - **Documentation**: Include NumPyDoc docstrings with Parameters, Attributes, and Examples.
 
-See :ref:`development_guide` for building and testing instructions.
+See :ref:`development` for building and testing instructions.

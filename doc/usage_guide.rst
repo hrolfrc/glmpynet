@@ -3,65 +3,88 @@
 Usage Guide
 ===========
 
-This guide explains how to use `glmpynet` to train and predict with regularized logistic regression models, designed to be as simple as using `scikit-learn`’s `LogisticRegression`. The initial version of `glmpynet` uses the `glmnetpp` C++ library with default settings (sourced from `glmnet`’s R documentation or online resources) for binary classification, without user-specified parameters like `C` or `penalty`.
+This guide provides a comprehensive overview of how to use `glmpynet` for
+regularized logistic regression. It covers the hybrid API, integration with
+Scikit-learn, and the configuration system.
+
+API Philosophy: A Hybrid Approach
+---------------------------------
+
+``glmpynet.LogisticRegression`` is designed to be a seamless, high-performance
+replacement for ``sklearn.linear_model.LogisticRegression``. To achieve this,
+it provides a user-friendly hybrid API.
+
+* **Simplicity by Default:** For most use cases, you can interact with the
+  class using familiar Scikit-learn parameters like ``C`` and ``penalty``.
+  This ensures smooth integration with tools like ``GridSearchCV``.
+
+* **Power on Demand:** For advanced users who want to access the full power
+  of the ``glmnet`` engine, the class also provides an "escape hatch" to use
+  ``glmnet``-native parameters like ``alpha`` and ``nlambda`` directly.
+
+The ``fit`` method automatically translates the user-provided parameters into
+the format required by the C++ backend.
 
 Basic Usage
 -----------
 
-The `glmpynet.LogisticRegression` class provides a `scikit-learn`-compatible API with `fit` and `predict` methods. It works out of the box with `glmnetpp`’s default settings, making it easy to integrate into data science workflows.
+For most users, the API will feel identical to Scikit-learn's.
 
-Example: Binary Classification
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example: L1 Regularization (Lasso)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This example shows how to train a model and make predictions on a synthetic dataset.
+This example shows how to train a model with an L1 penalty and make
+predictions, including getting class probabilities.
 
 .. code-block:: python
 
-   import numpy as np
-   from glmpynet import LogisticRegression
+   from glmpynet.logistic_regression import LogisticRegression
    from sklearn.datasets import make_classification
    from sklearn.model_selection import train_test_split
-   from sklearn.metrics import accuracy_score
 
-   # Generate a synthetic binary classification dataset
-   X, y = make_classification(
-       n_samples=1000,
-       n_features=20,
-       n_informative=5,
-       n_redundant=5,
-       n_classes=2,
-       random_state=42
-   )
-   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+   # 1. Generate a synthetic binary classification dataset
+   X, y = make_classification(random_state=42)
+   X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
-   # Instantiate and fit the model
-   model = LogisticRegression()  # Uses glmnetpp defaults
+   # 2. Instantiate and fit the model with sklearn-style parameters
+   model = LogisticRegression(penalty='l1', C=0.5)
    model.fit(X_train, y_train)
 
-   # Make predictions
+   # 3. Make predictions
    y_pred = model.predict(X_test)
 
-   # Evaluate accuracy
-   accuracy = accuracy_score(y_test, y_pred)
-   print(f"Model Accuracy: {accuracy:.2f}")
+   # 4. Get class probabilities
+   y_proba = model.predict_proba(X_test)
+   print("Predicted probabilities for the first 5 samples:")
+   print(y_proba[:5])
 
-Key Points
-~~~~~~~~~~
+Advanced Usage: Direct `glmnet` Parameters
+------------------------------------------
 
-* **Data Input**: `X` should be a NumPy array or compatible format (e.g., pandas DataFrame, converted internally to NumPy). `y` should be a binary classification target (0 or 1).
-* **Defaults**: The model uses `glmnetpp`’s default settings for regularization and other parameters, sourced from `glmnet`’s R documentation or online resources.
-* **Output**: `predict` returns class labels (0 or 1). Future versions will add `predict_proba` for probabilities and parameters like `C` or `penalty`.
+If you are an advanced user familiar with the R `glmnet` package, you can
+bypass the Scikit-learn style parameters and control the solver directly
+by providing ``alpha``. If ``alpha`` is provided, the ``penalty`` parameter
+is ignored.
+
+.. code-block:: python
+
+   # Instantiate the model using the glmnet 'alpha' parameter for elastic net
+   # This is equivalent to penalty='l1'
+   model_glmnet = LogisticRegression(alpha=1.0)
+   model_glmnet.fit(X_train, y_train)
 
 Integration with Scikit-learn
 -----------------------------
 
-`glmpynet.LogisticRegression` is designed to work seamlessly with `scikit-learn` tools, such as pipelines and cross-validation.
+``glmpynet.LogisticRegression`` is a fully compliant Scikit-learn estimator
+and works seamlessly with tools like ``Pipeline`` and ``GridSearchCV``.
 
-Example: Using with a Pipeline
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example: Using with GridSearchCV
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
+   from sklearn.model_selection import GridSearchCV
    from sklearn.pipeline import Pipeline
    from sklearn.preprocessing import StandardScaler
 
@@ -71,15 +94,45 @@ Example: Using with a Pipeline
        ('model', LogisticRegression())
    ])
 
-   # Fit the pipeline
-   pipeline.fit(X_train, y_train)
+   # Define a parameter grid to search over
+   param_grid = {
+       'model__penalty': ['l1', 'l2'],
+       'model__C': [0.1, 1.0, 10.0]
+   }
 
-   # Predict and evaluate
-   y_pred = pipeline.predict(X_test)
-   accuracy = accuracy_score(y_test, y_pred)
-   print(f"Pipeline Accuracy: {accuracy:.2f}")
+   # Set up and run the grid search
+   grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy')
+   grid_search.fit(X_train, y_train)
 
-Next Steps
-----------
+   print(f"Best parameters found: {grid_search.best_params_}")
+   print(f"Best cross-validation score: {grid_search.best_score_:.2f}")
 
-To explore practical examples, see :ref:`examples`. For Jupyter notebooks with detailed workflows, visit :ref:`notebooks`. To understand the `glmnetpp`-based design, check :ref:`architecture`.
+Configuration
+-------------
+
+``glmpynet`` uses a simple command-line utility and a JSON configuration
+file to manage persistent settings.
+
+Managing Settings with the `config` Command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can set, view, and list your global default settings using the
+``glmpynet config`` command. This is the easiest way to manage your
+configuration.
+
+.. code-block:: bash
+
+   # Set your default email address
+   glmpynet config set email "your.name@university.edu"
+
+   # Set your default minimum quality for triage (a future feature)
+   glmpynet config set triage_rules.min_quality_for_final_bib "Verified"
+
+   # View a specific setting
+   glmpynet config get email
+
+   # List all current settings
+   glmpynet config list
+
+This command manages a configuration file located in your user's home
+directory (e.g., ``~/.config/glmpynet/config.json``).

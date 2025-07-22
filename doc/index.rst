@@ -3,33 +3,43 @@
 Welcome to glmpynet's documentation!
 =====================================
 
-**glmpynet** is a Python package providing a scikit-learn-compatible LogisticRegression API powered by the high-performance `glmnetpp` C++ library, focusing on regularized logistic regression for binary classification. The initial version uses `glmnetpp`’s default settings (sourced from `glmnet`’s R documentation or online resources) with core methods (`fit`, `predict`), with parameters like `C` and `penalty` planned for later releases. Built with Bazel and Conda for reproducibility, `glmpynet` ensures reliability through rigorous `glmnetpp` validation.
+**glmpynet** is a Python package providing a scikit-learn-compatible ``LogisticRegression`` API powered by the high-performance ``glmnetpp`` C++ library.
 
-This documentation guides you through installing the package, using it in data science workflows, and understanding its design. Future versions may support multi-class classification and additional `glmnetpp` features.
+This project bridges the computational speed of ``glmnetpp`` with the ease-of-use of the Python data science ecosystem. It provides a user-friendly hybrid API that accepts both standard Scikit-learn parameters (e.g., ``C``, ``penalty``) for seamless integration and ``glmnet``-native parameters (e.g., ``alpha``) for advanced control.
+
+This documentation guides you through installing the package, using it in data science workflows, and understanding its design.
 
 Project Status
 ==============
 
-`glmpynet` is in early development, focusing on validating the `glmnetpp` environment and implementing a minimal `LogisticRegression` with default settings. See the `ROADMAP` for details.
+The Python API for ``glmpynet.LogisticRegression`` is now **complete and fully tested** against a mock backend. The next major phase of development is to implement the real C++ binding that connects this API to the ``glmnetpp`` engine.
+
+See the :doc:`development/development_roadmap` for the full development plan.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Documentation:
 
    getting_started
    usage_guide
    api_reference
    examples
-   notebooks/index
-   environment
-   architecture
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Development:
+
    development/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Project Information:
+
    project_information
 
 Indices and tables
 ==================
 
-Use the following to navigate the documentation:
-* :ref:`genindex` - Alphabetical list of terms and classes
-* :ref:`modindex` - List of `glmpynet` modules and functions
-* :ref:`search` - Find specific topics or keywords
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

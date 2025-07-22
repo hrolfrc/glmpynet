@@ -3,30 +3,31 @@
 Getting Started
 ===============
 
-This guide provides the essential steps to install `glmpynet` and run your first regularized logistic regression model using the `glmnetpp` C++ library.
+This guide provides the essential steps to install `glmpynet` and run your first regularized logistic regression model. It is designed to get you up and running in under five minutes.
+
+For a complete reference of all commands and options, please see the :doc:`usage_guide`.
 
 Installation
 ------------
 
-Install `glmpynet` via PyPI with `pip`. Ensure you have Python 3.8 or higher:
+`glmpynet` is distributed via the Python Package Index (PyPI) and can be installed easily using ``pip``. Ensure you have Python 3.8 or higher installed.
 
 .. code-block:: bash
 
    pip install glmpynet
 
-This installs `glmpynet` with `numpy`. For development setup, see :ref:`environment`.
+This command will install `glmpynet` and its necessary dependencies, such as NumPy and Scikit-learn. For a full development setup, which includes the C++ toolchain, please see the :doc:`development/guides/environment_setup` guide.
 
 Quick Start
 -----------
 
-Using `glmpynet` is as straightforward as any scikit-learn estimator. The main class, `LogisticRegression`, follows the standard `.fit()` and `.predict()` API. The initial version uses `glmnetpp`’s default settings (sourced from `glmnet`’s R documentation or online resources) without parameters like `C` or `penalty`.
+Using `glmpynet` is as straightforward as any Scikit-learn estimator. The main class, ``LogisticRegression``, follows the standard ``.fit()`` and ``.predict()`` API and accepts familiar parameters like ``penalty`` and ``C``.
 
-The following example trains a model on synthetic data.
+The following example trains a model on a synthetic dataset.
 
 .. code-block:: python
 
-   import numpy as np
-   from glmpynet import LogisticRegression
+   from glmpynet.logistic_regression import LogisticRegression
    from sklearn.datasets import make_classification
    from sklearn.model_selection import train_test_split
    from sklearn.metrics import accuracy_score
@@ -34,16 +35,14 @@ The following example trains a model on synthetic data.
    # 1. Generate a synthetic binary classification dataset
    X, y = make_classification(
        n_samples=1000,
-       n_features=20,
-       n_informative=5,
-       n_redundant=5,
-       n_classes=2,
+       n_features=50,
+       n_informative=10,
        random_state=42
    )
-   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-   # 2. Instantiate and fit the model
-   model = LogisticRegression()  # Uses glmnetpp defaults
+   # 2. Instantiate and fit the model using familiar sklearn parameters
+   model = LogisticRegression(penalty='l1', C=0.5)
    model.fit(X_train, y_train)
 
    # 3. Make predictions on the test set
@@ -53,7 +52,13 @@ The following example trains a model on synthetic data.
    accuracy = accuracy_score(y_test, y_pred)
    print(f"Model Accuracy: {accuracy:.2f}")
 
-Next Steps
-----------
+Next Step: Set Your Defaults
+----------------------------
 
-You have now trained your first `glmpynet` model. To learn more about usage, examples, and the `glmnetpp`-based architecture, proceed to :ref:`usage_guide` or :ref:`architecture`.
+To avoid typing your email address every time you run a script that might interact with external APIs in the future, you can set it as a global default using the ``config`` command. This is the recommended next step for any regular user.
+
+.. code-block:: bash
+
+   glmpynet config set email "your.name@university.edu"
+
+This command saves your email in a user-level configuration file. To learn more about configuration, see the :doc:`usage_guide`.

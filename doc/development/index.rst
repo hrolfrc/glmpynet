@@ -21,6 +21,7 @@ Our development philosophy is **phased and incremental**. We begin with a high-l
    :maxdepth: 2
    :caption: Developer Guides:
 
+   architecture
    guides/bazel_setup
    guides/environment_setup
    guides/building_and_testing

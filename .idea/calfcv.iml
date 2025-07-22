@@ -7,7 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludePattern pattern=".idea" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (glmpynet)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="glmnetpp" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
