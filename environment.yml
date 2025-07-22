@@ -5,7 +5,6 @@
 # conda activate glmpynet
 name: glmpynet
 channels:
-# - anaconda
   - conda-forge
   - defaults
 dependencies:
@@ -14,15 +13,13 @@ dependencies:
   - numpy
   - scipy
   - pandas
+  - pyyaml
   - pybind11
   - pytest
   - pytest-cov
   - pytest-mock
   - sphinx
   - sphinx_rtd_theme
-  - nbsphinx
-  - twine
-  - build
   - nbsphinx
   - twine
   - build
