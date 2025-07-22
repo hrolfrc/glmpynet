@@ -66,13 +66,3 @@ The Code
    plt.suptitle("Comparison of Model Coefficients")
    plt.show()
 
-
-Interpretation of Results
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When you run this code, you will see a stark difference in the coefficient plots.
-
-* The **scikit-learn ``LogisticRegression``** model (using its default L2/Ridge penalty) will have small, non-zero coefficients for almost all 50 features. It identifies the important features by giving them larger weights, but it does not eliminate the irrelevant ones.
-* The **``glmpynet.LogisticRegression``** model, using the L1/Lasso penalty, will have shrunk most of the coefficients to **exactly zero**. The plot will clearly show only a few non-zero coefficients, effectively performing automated feature selection and creating a more sparse, interpretable model.
-
-This demonstrates how `glmpynet` can be a powerful tool for building simpler and more robust models in high-dimensional settings.

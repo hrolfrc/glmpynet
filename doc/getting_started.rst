@@ -51,14 +51,3 @@ The following example trains a model on a synthetic dataset.
    # 4. Evaluate the model's performance
    accuracy = accuracy_score(y_test, y_pred)
    print(f"Model Accuracy: {accuracy:.2f}")
-
-Next Step: Set Your Defaults
-----------------------------
-
-To avoid typing your email address every time you run a script that might interact with external APIs in the future, you can set it as a global default using the ``config`` command. This is the recommended next step for any regular user.
-
-.. code-block:: bash
-
-   glmpynet config set email "your.name@university.edu"
-
-This command saves your email in a user-level configuration file. To learn more about configuration, see the :doc:`usage_guide`.

@@ -27,7 +27,8 @@ The project will follow a phased, incremental development model that prioritizes
 Phased Roadmap
 --------------
 
-### Phase 1: `glmnetpp` Foundation Verification
+Phase 1: `glmnetpp` Foundation Verification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Goal:** To systematically verify, debug, and confirm that the core C++ engine can be reliably built, tested, and benchmarked.
 * **Key Activities:**
@@ -38,7 +39,8 @@ Phased Roadmap
 * **Deliverable:** A stable, reproducible build of the ``glmnetpp`` library and a complete set of passing tests.
 * **Detailed Plan:** See :doc:`phase_1_analysis` and :doc:`phase_1_action_plan`.
 
-### Phase 2: Python-C++ Binding
+Phase 2: Python-C++ Binding
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Goal:** To create a stable, low-level binding that exposes the necessary ``glmnetpp`` functions to Python.
 * **Key Activities:**
@@ -48,7 +50,8 @@ Phased Roadmap
 * **Deliverable:** A compiled Python extension module that wraps the core ``glmnetpp`` solver.
 * **Detailed Plan:** See :doc:`phase_2_binding`.
 
-### Phase 3: Scikit-learn API Implementation
+Phase 3: Scikit-learn API Implementation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Goal:** To create a high-level, user-friendly ``LogisticNet`` class that is a drop-in replacement for ``scikit-learn``’s ``LogisticRegression``.
 * **Key Activities:**
@@ -58,7 +61,8 @@ Phased Roadmap
 * **Deliverable:** A fully tested and documented ``LogisticNet`` Python class.
 * **Detailed Plan:** See :doc:`phase_3_sklearn_api`.
 
-### Phase 4: CI/CD and Public Release
+Phase 4: CI/CD and Public Release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     * **Goal:** To automate the build and test process and deliver a stable, installable package to users.
     * **Key Activities:**

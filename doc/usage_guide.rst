@@ -3,7 +3,7 @@
 Usage Guide
 ===========
 
-This guide provides a comprehensive overview of how to use `glmpynet` for
+This guide provides an overview of how to use `glmpynet` for
 regularized logistic regression. It covers the hybrid API, integration with
 Scikit-learn, and the configuration system.
 
@@ -18,7 +18,7 @@ it provides a user-friendly hybrid API.
   class using familiar Scikit-learn parameters like ``C`` and ``penalty``.
   This ensures smooth integration with tools like ``GridSearchCV``.
 
-* **Power on Demand:** For advanced users who want to access the full power
+* **Glmnet on Request:** For advanced users who want to access the full power
   of the ``glmnet`` engine, the class also provides an "escape hatch" to use
   ``glmnet``-native parameters like ``alpha`` and ``nlambda`` directly.
 
@@ -106,33 +106,3 @@ Example: Using with GridSearchCV
 
    print(f"Best parameters found: {grid_search.best_params_}")
    print(f"Best cross-validation score: {grid_search.best_score_:.2f}")
-
-Configuration
--------------
-
-``glmpynet`` uses a simple command-line utility and a JSON configuration
-file to manage persistent settings.
-
-Managing Settings with the `config` Command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can set, view, and list your global default settings using the
-``glmpynet config`` command. This is the easiest way to manage your
-configuration.
-
-.. code-block:: bash
-
-   # Set your default email address
-   glmpynet config set email "your.name@university.edu"
-
-   # Set your default minimum quality for triage (a future feature)
-   glmpynet config set triage_rules.min_quality_for_final_bib "Verified"
-
-   # View a specific setting
-   glmpynet config get email
-
-   # List all current settings
-   glmpynet config list
-
-This command manages a configuration file located in your user's home
-directory (e.g., ``~/.config/glmpynet/config.json``).

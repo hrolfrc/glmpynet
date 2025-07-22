@@ -4,7 +4,7 @@
 [![ReadTheDocs](https://readthedocs.org/projects/glmpynet/badge/?version=latest)](https://glmpynet.readthedocs.io/en/latest/)
 [![Codecov](https://codecov.io/gh/hrolfrc/glmpynet/branch/master/graph/badge.svg)](https://codecov.io/gh/hrolfrc/glmpynet)
 
-## High-Performance Logistic Regression for Scikit-Learn
+## Logistic Regression using glmnet for Scikit-Learn
 
 **glmpynet** is a Python package that provides a scikit-learn-compatible `LogisticRegression` API powered by the high-performance `glmnetpp` C++ library.
 
@@ -54,12 +54,6 @@ print(f"Model Accuracy: {accuracy:.2f}")
 ## Project Status
 
 The Python API for `glmpynet.LogisticRegression` is now **complete and fully tested** against a mock backend. The next major phase of development is to implement the real C++ binding that connects this API to the `glmnetpp` engine.
-
-See the `ROADMAP.md` for the full development plan.
-
-## Contributing
-
-Contributions are welcome! See `CONTRIBUTING.md` for guidelines on reporting bugs, suggesting features, or submitting pull requests.
 
 ## License
 

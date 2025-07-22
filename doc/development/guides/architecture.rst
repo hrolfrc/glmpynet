@@ -22,9 +22,9 @@ This approach provides:
 
 The architecture consists of three layers:
 
-#. **The `glmnetpp` Backend (The Engine)**: The compiled C++ library (header-only) performs the computationally intensive task of fitting regularized logistic regression models. It is treated as a high-performance black box.
+#. **The ``glmnetpp`` Backend (The Engine)**: The compiled C++ library (header-only) performs the computationally intensive task of fitting regularized logistic regression models. It is treated as a high-performance black box.
 
-#. **The Python Wrapper (`glmpynet`) (The Interface)**: A thin layer of Python code responsible for:
+#. **The Python Wrapper ( ``glmpynet`` ) (The Interface)**: A thin layer of Python code responsible for:
    * Preparing and validating data (e.g., converting NumPy arrays to Eigen matrices).
    * Calling the `glmnetpp` backend with default settings.
    * Interpreting and returning results in a `scikit-learn`-compatible format.

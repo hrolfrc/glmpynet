@@ -28,9 +28,9 @@ To create a complete picture of the build system, a static analysis was performe
 
 The following files were analyzed:
 
-* **``WORKSPACE``:** This file defines all external, third-party libraries that the project depends on. It is the primary source for understanding the project's software supply chain.
-* **``generate_bazelrc``:** This Python script dynamically creates the ``.bazelrc`` file, which contains the specific compiler flags, toolchain paths, and other build options. Analyzing this script reveals the precise compiler standards and system-level dependencies.
-* **``BUILD.bazel``:** The top-level build file defines the main ``glmnetpp`` library target itself, revealing its internal structure and dependencies (such as Eigen).
+* ** ``WORKSPACE`` :** This file defines all external, third-party libraries that the project depends on. It is the primary source for understanding the project's software supply chain.
+* ** ``generate_bazelrc`` :** This Python script dynamically creates the ``.bazelrc`` file, which contains the specific compiler flags, toolchain paths, and other build options. Analyzing this script reveals the precise compiler standards and system-level dependencies.
+* ** ``BUILD.bazel`` :** The top-level build file defines the main ``glmnetpp`` library target itself, revealing its internal structure and dependencies (such as Eigen).
 
 Requirements Analysis
 ---------------------
